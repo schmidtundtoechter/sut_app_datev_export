@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-23 11:36:37.823610",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "export_email",
+  "consultant_number",
+  "company_client_mapping",
+  "export_history"
+ ],
+ "fields": [
+  {
+   "fieldname": "export_email",
+   "fieldtype": "Data",
+   "label": "Ziel-E-Mail des Exports",
+   "options": "Email"
+  },
+  {
+   "description": "6-digit consultant number",
+   "fieldname": "consultant_number",
+   "fieldtype": "Data",
+   "label": "Berater Nr.",
+   "length": 6
+  },
+  {
+   "fieldname": "company_client_mapping",
+   "fieldtype": "Table",
+   "label": "Company to Mandanten Nr. Mapping",
+   "options": "DATEV Export Mandant"
+  },
+  {
+   "fieldname": "export_history",
+   "fieldtype": "Table",
+   "label": "Letztes Exportdatum",
+   "options": "DATEV Export History"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-03-23 11:52:54.179583",
+ "modified_by": "Administrator",
+ "module": "Datev Export Sut",
+ "name": "DATEV Export SUT Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

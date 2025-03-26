@@ -7,6 +7,13 @@ app_license = "mit"
 
 # Apps
 # ------------------
+# Document Events
+doc_events = {
+    "Employee": {
+        "on_update": "datev_export_sut.datev_export_sut.server_scripts.employee.employee_on_update"
+    }
+}
+
 
 # required_apps = []
 
@@ -43,7 +50,7 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Employee" : "datev_export_sut/client_script/employee.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}

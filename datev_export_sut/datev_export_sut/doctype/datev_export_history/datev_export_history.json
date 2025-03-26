@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-23 11:27:53.441173",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "export_date",
+  "employee_count",
+  "status",
+  "message"
+ ],
+ "fields": [
+  {
+   "fieldname": "export_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Export Date"
+  },
+  {
+   "fieldname": "employee_count",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Exported Employees"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "\nSuccess\nError"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Small Text",
+   "label": "Message"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-23 11:36:03.380247",
+ "modified_by": "Administrator",
+ "module": "Datev Export Sut",
+ "name": "DATEV Export History",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
