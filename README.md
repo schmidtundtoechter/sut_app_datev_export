@@ -7,4 +7,4 @@ DATEV Export SUT
 mit
 
 ## Commit strategy
-Main branch has restrictions.
+Main branch has restrictions. Some more info.
