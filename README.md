@@ -5,3 +5,6 @@ DATEV Export SUT
 #### License
 
 mit
+
+## Commit strategy
+Main branch has restrictions.
