@@ -14,14 +14,14 @@ import tempfile
 import os
 from frappe import _
 from datetime import datetime
-from datev_export_sut.datev_export_sut.utils.employee_data import get_employees_for_export, validate_employee_data , map_employee_to_lodas
-from datev_export_sut.datev_export_sut.utils.file_builder import (
+from sut_app_datev_export.sut_app_datev_export.utils.employee_data import get_employees_for_export, validate_employee_data , map_employee_to_lodas
+from sut_app_datev_export.sut_app_datev_export.utils.file_builder import (
     generate_lodas_files, 
     generate_lodas_file_header, 
     generate_record_description, 
     generate_employee_data
 )
-from datev_export_sut.datev_export_sut.utils.email_sender import send_export_email
+from sut_app_datev_export.sut_app_datev_export.utils.email_sender import send_export_email
 
 class DATEVExportSUTSettings(Document):
     def validate(self):

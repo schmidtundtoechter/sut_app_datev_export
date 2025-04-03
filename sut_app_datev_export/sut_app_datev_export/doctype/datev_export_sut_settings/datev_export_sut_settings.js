@@ -10,7 +10,7 @@ frappe.ui.form.on('DATEV Export SUT Settings', {
     refresh: function(frm) {
       frm.add_custom_button(__('Export all marked employees'), function() {
         frappe.call({
-          method: 'datev_export_sut.datev_export_sut.doctype.datev_export_sut_settings.datev_export_sut_settings.export_employees',
+          method: 'sut_app_datev_export.sut_app_datev_export.doctype.datev_export_sut_settings.datev_export_sut_settings.export_employees',
           freeze: true,
           freeze_message: __('Exporting employee data...'),
           callback: function(r) {

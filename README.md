@@ -1,6 +1,6 @@
-## Datev Export Sut
+## SUT App DATEV Export
 
-DATEV Export SUT
+SUT App DATEV Export
 
 #### License
 
