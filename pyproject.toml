@@ -1,9 +1,9 @@
 [project]
-name = "datev_export_sut"
+name = "sut_app_datev_export"
 authors = [
     { name = "ahmad900mohammad@gmail.com", email = "ahmad900mohammad@gmail.com"}
 ]
-description = "DATEV Export SUT"
+description = "SUT App DATEV Export"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]

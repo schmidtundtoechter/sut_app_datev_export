@@ -1,7 +1,7 @@
-app_name = "datev_export_sut"
-app_title = "Datev Export Sut"
+app_name = "sut_app_datev_export"
+app_title = "SUT App DATEV Export"
 app_publisher = "ahmad900mohammad@gmail.com"
-app_description = "DATEV Export SUT"
+app_description = "SUT App DATEV Export"
 app_email = "ahmad900mohammad@gmail.com"
 app_license = "mit"
 
@@ -10,7 +10,7 @@ app_license = "mit"
 # Document Events
 doc_events = {
     "Employee": {
-        "on_update": "datev_export_sut.datev_export_sut.server_scripts.employee.employee_on_update"
+        "on_update": "sut_app_datev_export.sut_app_datev_export.server_scripts.employee.employee_on_update"
     }
 }
 
@@ -20,11 +20,11 @@ doc_events = {
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
 # 	{
-# 		"name": "datev_export_sut",
-# 		"logo": "/assets/datev_export_sut/logo.png",
-# 		"title": "Datev Export Sut",
-# 		"route": "/datev_export_sut",
-# 		"has_permission": "datev_export_sut.api.permission.has_app_permission"
+# 		"name": "sut_app_datev_export",
+# 		"logo": "/assets/sut_app_datev_export/logo.png",
+# 		"title": "SUT App DATEV Export",
+# 		"route": "/sut_app_datev_export",
+# 		"has_permission": "sut_app_datev_export.api.permission.has_app_permission"
 # 	}
 # ]
 
@@ -32,15 +32,15 @@ doc_events = {
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/datev_export_sut/css/datev_export_sut.css"
-# app_include_js = "/assets/datev_export_sut/js/datev_export_sut.js"
+# app_include_css = "/assets/sut_app_datev_export/css/sut_app_datev_export.css"
+# app_include_js = "/assets/sut_app_datev_export/js/sut_app_datev_export.js"
 
 # include js, css files in header of web template
-# web_include_css = "/assets/datev_export_sut/css/datev_export_sut.css"
-# web_include_js = "/assets/datev_export_sut/js/datev_export_sut.js"
+# web_include_css = "/assets/sut_app_datev_export/css/sut_app_datev_export.css"
+# web_include_js = "/assets/sut_app_datev_export/js/sut_app_datev_export.js"
 
 # include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "datev_export_sut/public/scss/website"
+# website_theme_scss = "sut_app_datev_export/public/scss/website"
 
 # include js, css files in header of web form
 # webform_include_js = {"doctype": "public/js/doctype.js"}
@@ -50,7 +50,7 @@ doc_events = {
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Employee" : "datev_export_sut/client_script/employee.js"}
+doctype_js = {"Employee" : "sut_app_datev_export/client_script/employee.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -58,7 +58,7 @@ doctype_js = {"Employee" : "datev_export_sut/client_script/employee.js"}
 # Svg Icons
 # ------------------
 # include app icons in desk
-# app_include_icons = "datev_export_sut/public/icons.svg"
+# app_include_icons = "sut_app_datev_export/public/icons.svg"
 
 # Home Pages
 # ----------
@@ -82,43 +82,43 @@ doctype_js = {"Employee" : "datev_export_sut/client_script/employee.js"}
 
 # add methods and filters to jinja environment
 # jinja = {
-# 	"methods": "datev_export_sut.utils.jinja_methods",
-# 	"filters": "datev_export_sut.utils.jinja_filters"
+# 	"methods": "sut_app_datev_export.utils.jinja_methods",
+# 	"filters": "sut_app_datev_export.utils.jinja_filters"
 # }
 
 # Installation
 # ------------
 
-# before_install = "datev_export_sut.install.before_install"
-# after_install = "datev_export_sut.install.after_install"
+# before_install = "sut_app_datev_export.install.before_install"
+# after_install = "sut_app_datev_export.install.after_install"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "datev_export_sut.uninstall.before_uninstall"
-# after_uninstall = "datev_export_sut.uninstall.after_uninstall"
+# before_uninstall = "sut_app_datev_export.uninstall.before_uninstall"
+# after_uninstall = "sut_app_datev_export.uninstall.after_uninstall"
 
 # Integration Setup
 # ------------------
 # To set up dependencies/integrations with other apps
 # Name of the app being installed is passed as an argument
 
-# before_app_install = "datev_export_sut.utils.before_app_install"
-# after_app_install = "datev_export_sut.utils.after_app_install"
+# before_app_install = "sut_app_datev_export.utils.before_app_install"
+# after_app_install = "sut_app_datev_export.utils.after_app_install"
 
 # Integration Cleanup
 # -------------------
 # To clean up dependencies/integrations with other apps
 # Name of the app being uninstalled is passed as an argument
 
-# before_app_uninstall = "datev_export_sut.utils.before_app_uninstall"
-# after_app_uninstall = "datev_export_sut.utils.after_app_uninstall"
+# before_app_uninstall = "sut_app_datev_export.utils.before_app_uninstall"
+# after_app_uninstall = "sut_app_datev_export.utils.after_app_uninstall"
 
 # Desk Notifications
 # ------------------
 # See frappe.core.notifications.get_notification_config
 
-# notification_config = "datev_export_sut.notifications.get_notification_config"
+# notification_config = "sut_app_datev_export.notifications.get_notification_config"
 
 # Permissions
 # -----------
@@ -157,39 +157,39 @@ doctype_js = {"Employee" : "datev_export_sut/client_script/employee.js"}
 
 # scheduler_events = {
 # 	"all": [
-# 		"datev_export_sut.tasks.all"
+# 		"sut_app_datev_export.tasks.all"
 # 	],
 # 	"daily": [
-# 		"datev_export_sut.tasks.daily"
+# 		"sut_app_datev_export.tasks.daily"
 # 	],
 # 	"hourly": [
-# 		"datev_export_sut.tasks.hourly"
+# 		"sut_app_datev_export.tasks.hourly"
 # 	],
 # 	"weekly": [
-# 		"datev_export_sut.tasks.weekly"
+# 		"sut_app_datev_export.tasks.weekly"
 # 	],
 # 	"monthly": [
-# 		"datev_export_sut.tasks.monthly"
+# 		"sut_app_datev_export.tasks.monthly"
 # 	],
 # }
 
 # Testing
 # -------
 
-# before_tests = "datev_export_sut.install.before_tests"
+# before_tests = "sut_app_datev_export.install.before_tests"
 
 # Overriding Methods
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "datev_export_sut.event.get_events"
+# 	"frappe.desk.doctype.event.event.get_events": "sut_app_datev_export.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-# 	"Task": "datev_export_sut.task.get_dashboard_data"
+# 	"Task": "sut_app_datev_export.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -203,13 +203,13 @@ doctype_js = {"Employee" : "datev_export_sut/client_script/employee.js"}
 
 # Request Events
 # ----------------
-# before_request = ["datev_export_sut.utils.before_request"]
-# after_request = ["datev_export_sut.utils.after_request"]
+# before_request = ["sut_app_datev_export.utils.before_request"]
+# after_request = ["sut_app_datev_export.utils.after_request"]
 
 # Job Events
 # ----------
-# before_job = ["datev_export_sut.utils.before_job"]
-# after_job = ["datev_export_sut.utils.after_job"]
+# before_job = ["sut_app_datev_export.utils.before_job"]
+# after_job = ["sut_app_datev_export.utils.after_job"]
 
 # User Data Protection
 # --------------------
@@ -239,7 +239,7 @@ doctype_js = {"Employee" : "datev_export_sut/client_script/employee.js"}
 # --------------------------------
 
 # auth_hooks = [
-# 	"datev_export_sut.auth.validate"
+# 	"sut_app_datev_export.auth.validate"
 # ]
 
 # Automatically update python controller files with type annotations for this app.

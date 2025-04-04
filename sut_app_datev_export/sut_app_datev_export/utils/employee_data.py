@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 from datetime import datetime
-from datev_export_sut.datev_export_sut.utils.died_mappings import map_value_to_died
+from sut_app_datev_export.sut_app_datev_export.utils.died_mappings import map_value_to_died
 
 def get_employees_for_export():
     """Get all employees marked for export, grouped by company."""

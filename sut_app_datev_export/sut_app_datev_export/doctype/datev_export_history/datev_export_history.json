@@ -43,7 +43,7 @@
  "links": [],
  "modified": "2025-03-23 11:36:03.380247",
  "modified_by": "Administrator",
- "module": "Datev Export Sut",
+ "module": "SUT App DATEV Export",
  "name": "DATEV Export History",
  "owner": "Administrator",
  "permissions": [],

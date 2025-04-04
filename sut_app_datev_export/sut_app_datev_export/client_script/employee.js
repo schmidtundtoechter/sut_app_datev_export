@@ -8,7 +8,7 @@ frappe.ui.form.on('Employee', {
                 function() {
                     // On Yes
                     frappe.call({
-                        method: 'datev_export_sut.datev_export_sut.doctype.datev_export_sut_settings.datev_export_sut_settings.export_single_employee',
+                        method: 'sut_app_datev_export.sut_app_datev_export.doctype.datev_export_sut_settings.datev_export_sut_settings.export_single_employee',
                         args: {
                             employee: frm.doc.name
                         },

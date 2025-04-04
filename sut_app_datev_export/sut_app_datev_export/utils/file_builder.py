@@ -2,7 +2,7 @@ import frappe
 import os
 import tempfile
 from datetime import datetime
-from datev_export_sut.datev_export_sut.utils.employee_data import map_employee_to_lodas
+from sut_app_datev_export.sut_app_datev_export.utils.employee_data import map_employee_to_lodas
 
 def generate_lodas_files(employees_by_company, settings):
     """Generate LODAS files for each company."""
