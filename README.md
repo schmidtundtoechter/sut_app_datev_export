@@ -1,6 +1,6 @@
 ## SUT App DATEV Export
 
-SUT App DATEV Export
+This app contains the exporter for DATEV.
 
 #### License
 
