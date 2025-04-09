@@ -1,0 +1,414 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-08 09:48:50.551371",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "abweichender_kontoinhaber",
+  "akademischer_grad",
+  "alleinerziehend",
+  "anzahl_kinderfreibetr\u00e4ge",
+  "arbeits_ausbildungsbeginn_tt_mm_jjjj",
+  "arbeits_ausbildungsende_tt_mm_jjjj",
+  "arbeitsbescheinigung_im_austrittsmonat_elektr_ueberm",
+  "arbeitszeit_18_std_mit_zulassung_aa",
+  "ausstellende_dienststelle",
+  "ausweis_nr_aktenzeichen",
+  "automatische_loeschung_nach_austritt_unterdruecken",
+  "basislohn",
+  "beginn_der_ausbildung",
+  "bescheinigung_nach_313_sgb_iii_elektronisch_ueberm",
+  "bic",
+  "datum_des_todes",
+  "column_break_iktb",
+  "eel_meldung_nach_austritt_des_arbeitnehmers",
+  "ehrenamtliche_taetigkeit",
+  "einmalbezuege_nach_austritt_d_arbeitnehmers_berechnen",
+  "entlohnungsform",
+  "erstbeschaeftigung",
+  "ersteintrittsdatum_fuer_aag_und_brutto_netto_verwenden",
+  "familienname_personaldaten_kinderdaten_allgemeine_angaben",
+  "geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben",
+  "geburtsland",
+  "geburtsname",
+  "geburtsort",
+  "grundurlaubsanspruch",
+  "iban",
+  "jobticket_hoehe_des_geldwerten_vorteils",
+  "kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber",
+  "section_break_bkom",
+  "kind_nummer",
+  "konfessionszugehoerigkeit_steuerpflichtiger",
+  "lfd_brutto_vereinbart",
+  "namenszusatz_geburtsname",
+  "namenszusatz_mitarbeitername",
+  "ort_der_dienststelle",
+  "pauschalsteuer_berechnen",
+  "sb_ausweis_gueltig_ab_tt_mm_jjjj",
+  "staatsangehoerigkeit",
+  "steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten",
+  "studienbescheinigung",
+  "column_break_cymf",
+  "stundenlohn",
+  "stundenlohn_1",
+  "tatsaechliches_ende_der_ausbildung",
+  "urlaubsanspruch_aktuelles_jahr",
+  "verheiratet",
+  "versicherungsnummer",
+  "voraussichtliches_ende_der_ausbildung_gem_vertrag",
+  "vorname_personaldaten_kinderdaten_allgemeine_angaben",
+  "vorsatzwort_geburtsname",
+  "vorsatzwort_mitarbeitername"
+ ],
+ "fields": [
+  {
+   "fieldname": "abweichender_kontoinhaber",
+   "fieldtype": "Data",
+   "label": "Abweichender Kontoinhaber",
+   "length": 25
+  },
+  {
+   "fieldname": "akademischer_grad",
+   "fieldtype": "Data",
+   "label": "Akademischer Grad",
+   "length": 20
+  },
+  {
+   "fieldname": "alleinerziehend",
+   "fieldtype": "Select",
+   "label": "alleinerziehend",
+   "options": "\nNein\nJa"
+  },
+  {
+   "description": "(Personaldaten\\Steuer\\Steuerkarte\\Allgemeine Daten)",
+   "fieldname": "anzahl_kinderfreibetr\u00e4ge",
+   "fieldtype": "Float",
+   "label": "Anzahl Kinderfreibetr\u00e4ge",
+   "precision": "1"
+  },
+  {
+   "fieldname": "arbeits_ausbildungsbeginn_tt_mm_jjjj",
+   "fieldtype": "Date",
+   "label": "Arbeits-/Ausbildungsbeginn (TT.MM.JJJJ)"
+  },
+  {
+   "fieldname": "arbeits_ausbildungsende_tt_mm_jjjj",
+   "fieldtype": "Date",
+   "label": "Arbeits-/Ausbildungsende (TT.MM.JJJJ)"
+  },
+  {
+   "fieldname": "arbeitsbescheinigung_im_austrittsmonat_elektr_ueberm",
+   "fieldtype": "Select",
+   "label": "Arbeitsbescheinigung im Austrittsmonat elektr. \u00fcberm.",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "arbeitszeit_18_std_mit_zulassung_aa",
+   "fieldtype": "Select",
+   "label": "Arbeitszeit < 18 Std. mit Zulassung AA",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "ausstellende_dienststelle",
+   "fieldtype": "Data",
+   "label": "Ausstellende Dienststelle",
+   "length": 5
+  },
+  {
+   "fieldname": "ausweis_nr_aktenzeichen",
+   "fieldtype": "Data",
+   "label": "Ausweis-Nr./Aktenzeichen",
+   "length": 20
+  },
+  {
+   "fieldname": "automatische_loeschung_nach_austritt_unterdruecken",
+   "fieldtype": "Select",
+   "label": "Automatische L\u00f6schung nach Austritt unterdr\u00fccken",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "basislohn",
+   "fieldtype": "Float",
+   "label": "Basislohn",
+   "precision": "2"
+  },
+  {
+   "fieldname": "beginn_der_ausbildung",
+   "fieldtype": "Date",
+   "label": "Beginn der Ausbildung"
+  },
+  {
+   "fieldname": "bescheinigung_nach_313_sgb_iii_elektronisch_ueberm",
+   "fieldtype": "Select",
+   "label": "Bescheinigung nach \u00a7 313 SGB III elektronisch \u00fcberm.",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "bic",
+   "fieldtype": "Data",
+   "label": "BIC",
+   "length": 11
+  },
+  {
+   "fieldname": "datum_des_todes",
+   "fieldtype": "Date",
+   "label": "Datum des Todes"
+  },
+  {
+   "fieldname": "column_break_iktb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "eel_meldung_nach_austritt_des_arbeitnehmers",
+   "fieldtype": "Select",
+   "label": "EEL-Meldung nach Austritt des Arbeitnehmers",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "ehrenamtliche_taetigkeit",
+   "fieldtype": "Select",
+   "label": "Ehrenamtliche T\u00e4tigkeit",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "einmalbezuege_nach_austritt_d_arbeitnehmers_berechnen",
+   "fieldtype": "Select",
+   "label": "Einmalbez\u00fcge nach Austritt d. Arbeitnehmers berechnen",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "entlohnungsform",
+   "fieldtype": "Select",
+   "label": "Entlohnungsform",
+   "options": "\nStundenlohn\nLeistungslohn\nGehalt"
+  },
+  {
+   "fieldname": "erstbeschaeftigung",
+   "fieldtype": "Select",
+   "label": "Erstbeschaeftigung",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "ersteintrittsdatum_fuer_aag_und_brutto_netto_verwenden",
+   "fieldtype": "Select",
+   "label": "Ersteintrittsdatum f\u00fcr AAG und Brutto/Netto verwenden",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "familienname_personaldaten_kinderdaten_allgemeine_angaben",
+   "fieldtype": "Data",
+   "label": "Familienname (Personaldaten\\Kinderdaten\\Allgemeine Angaben)",
+   "length": 30
+  },
+  {
+   "fieldname": "geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben",
+   "fieldtype": "Date",
+   "label": "Geburtsdatum (Personaldaten\\Kinderdaten\\Allgemeine Angaben)"
+  },
+  {
+   "fieldname": "geburtsland",
+   "fieldtype": "Select",
+   "label": "Geburtsland",
+   "options": "\nDeutschland\nAlbanien\nBosnien und Herzegowina\nAndorra\nBelgien\nBulgarien\nD\u00e4nemark\nEstland\nFinnland\nFrankreich\nKroatien\nSlowenien\nSerbien und Montenegro\nSerbien (einschl. Kosovo)\nGriechenland\nIrland\nIsland\nItalien\nJugoslawien\nLettland\nMontenegro\nLiechtenstein\nLitauen\nLuxemburg\nNordmazedonien\nMalta\nMoldau\nMonaco\nNiederlande\nNorwegen\nKosovo\n\u00d6sterreich\nPolen\nPortugal\nRum\u00e4nien\nSlowakei\nSan Marino\nSchweden\nSchweiz\nRussische F\u00f6deration\nSpanien\nT\u00fcrkei\nTschechien\nUngarn\nUkraine\nVatikanstadt\nVereinigtes K\u00f6nigreich\nWeissrussland\nSerbien\nZypern\nGibraltar\n\u00dcbriges Europa\nAlgerien\nAngola\nEritrea\n\u00c4thiopien\nLesotho\nBotsuana\nBenin\nDschibuti\nC\u00f4te d\u2018Ivoire\nNigeria\nSimbabwe\nGabun\nGambia\nGhana\nMauretanien\nCabo Verde\nKenia\nKomoren\nKongo\nKongo, Demokratische Republik\nLiberia\nLibyen\nMadagaskar\nMali\nMarokko\nMauritius\nMosambik\nNiger\nMalawi\nSambia\nBurkina Faso\nGuinea-Bissau\nGuinea\nKamerun\nS\u00fcdafrika\nRuanda\nNamibia\nS\u00e3o Tom\u00e9 und Pr\u00edncipe\nSenegal\nSeychellen\nSierra Leone\nSomalia\n\u00c4quatorialguinea\nSudan (vor der Teilung des Landes)\nSudan\nS\u00fcdsudan\nEswatini\nTansania\nTogo\nTschad\nTunesien\nUganda\n\u00c4gypten\nZentralafrikanische Republik\nBurundi\nBritisch abh\u00e4ngige Gebiete in Afrika\n\u00dcbriges Afrika\nAntigua und Barbuda\nBarbados\nArgentinien\nBahamas\nBolivien\nBrasilien\nGuyana\nBelize\nChile\nDominica\nCosta Rica\nDominikanische Republik\nEcuador\nEl Salvador\nGrenada\nGuatemala\nHaiti\nHonduras\nKanada\nKolumbien\nKuba\nMexiko\nNicaragua\nJamaika\nPanama\nParaguay\nPeru\nSuriname\nUruguay\nSt. Lucia\nVenezuela\nVereinigte Staaten\nSt. Vincent und die Grenadinen\nSt. Kitts und Nevis\nTrinidad und Tobago\nBritisch abh\u00e4ngige Gebiete in Amerika\n\u00dcbriges Amerika\nHongkong\nMacau\nJemen\nArmenien\nAfghanistan\nBahrain\nAserbaidschan\nBhutan\nMyanmar\nBrunei Darussalam\nGeorgien\nSri Lanka\nVietnam\nKorea, Demokratische Volksrepublik (Nordkorea)\nIndien\nIndonesien\nIrak\nIran\nIsrael\nJapan\nKasachstan\nJordanien\nKambodscha\nKatar\nKuwait\nLaos\nKirgisistan\nLibanon\nMalediven\nOman\nMongolei\nNepal\nPal\u00e4stinensische Gebiete\nBangladesch\nPakistan\nPhilippinen\nTaiwan\nKorea, Republik (S\u00fcdkorea)\nVereinigte Arabische Emirate\nTadschikistan\nTurkmenistan\nSaudi-Arabien\nSingapur\nSyrien\nThailand\nUsbekistan\nChina\nMalaysia\n\u00dcbriges Asien\nAustralien\nSalomonen\nN\u00f6rdliche Marianen\nFidschi\nKiribati\nNauru\nVanuatu\nNeuseeland\nPalau\nPapua-Neuguinea\nTuvalu\nTonga\nSamoa\nMarshallinseln\nMikronesien\nBritisch abh. Gebiete in Australien/Ozeanien\n\u00dcbriges Ozeanien\nUnbekanntes Ausland\nstaatenlos\nungekl\u00e4rt\nohne Angabe"
+  },
+  {
+   "fieldname": "geburtsname",
+   "fieldtype": "Data",
+   "label": "Geburtsname",
+   "length": 30
+  },
+  {
+   "fieldname": "geburtsort",
+   "fieldtype": "Data",
+   "label": "Geburtsort",
+   "length": 34
+  },
+  {
+   "fieldname": "grundurlaubsanspruch",
+   "fieldtype": "Float",
+   "label": "Grundurlaubsanspruch",
+   "precision": "1"
+  },
+  {
+   "fieldname": "iban",
+   "fieldtype": "Data",
+   "label": "IBAN",
+   "length": 42
+  },
+  {
+   "fieldname": "jobticket_hoehe_des_geldwerten_vorteils",
+   "fieldtype": "Float",
+   "label": "Jobticket (H\u00f6he des geldwerten Vorteils)",
+   "precision": "2"
+  },
+  {
+   "fieldname": "kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber",
+   "fieldtype": "Select",
+   "label": "Kennzeichnung Arbeitgeber (Haupt-/Nebenarbeitgeber)",
+   "options": "\nkeine Angabe\nHauptarbeitgeber\nNebenarbeitgeber"
+  },
+  {
+   "fieldname": "section_break_bkom",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "kind_nummer",
+   "fieldtype": "Int",
+   "label": "Kind Nummer",
+   "length": 2
+  },
+  {
+   "fieldname": "konfessionszugehoerigkeit_steuerpflichtiger",
+   "fieldtype": "Select",
+   "label": "Konfessionszugeh\u00f6rigkeit Steuerpflichtiger",
+   "options": "\nKonfessionslos / Keine Kirchensteuerberechnung\nev - Evangelische Kirchensteuer\nib - Israelitische Religionsgemeinschaft Baden\nih - J\u00fcdische Kultussteuer\nil - Israelitische Kultussteuer der kultusberechtigten Gemeinden\nis - Israelitische / J\u00fcdische Kultussteuer\niw - Israelitische Religionsgemeinschaft W\u00fcrttembergs\njd - J\u00fcdische Kultussteuer\njh - J\u00fcdische Kultussteuer\nlt - Evangelisch lutherisch (bis 12/2015)\nrf - Evangelisch reformiert (bis 12/2015)\nrk - R\u00f6misch-Katholische Kirchensteuer\nak - Altkatholische Kirchensteuer\nfa - Freie Religionsgemeinschaft Alzey\nfb - Freireligi\u00f6se Landesgemeinde Baden\nfg - Freireligi\u00f6se Landesgemeinde Pfalz\nfm - Freireligi\u00f6se Gemeinde Mainz\nfr - Franz\u00f6sisch reformiert (bis 12/2015)\nfs - Freireligi\u00f6se Gemeinde Offenbach/Main"
+  },
+  {
+   "fieldname": "lfd_brutto_vereinbart",
+   "fieldtype": "Float",
+   "label": "Lfd. Brutto vereinbart",
+   "precision": "2"
+  },
+  {
+   "fieldname": "namenszusatz_geburtsname",
+   "fieldtype": "Data",
+   "label": "Namenszusatz (Geburtsname)",
+   "length": 15
+  },
+  {
+   "fieldname": "namenszusatz_mitarbeitername",
+   "fieldtype": "Data",
+   "label": "Namenszusatz (Mitarbeitername)",
+   "length": 15
+  },
+  {
+   "fieldname": "ort_der_dienststelle",
+   "fieldtype": "Data",
+   "label": "Ort der Dienststelle",
+   "length": 40
+  },
+  {
+   "fieldname": "pauschalsteuer_berechnen",
+   "fieldtype": "Select",
+   "label": "Pauschalsteuer berechnen",
+   "options": "\nnein\n2 Prozent\n20 Prozent"
+  },
+  {
+   "fieldname": "sb_ausweis_gueltig_ab_tt_mm_jjjj",
+   "fieldtype": "Date",
+   "label": "SB-Ausweis g\u00fcltig ab  (TT.MM.JJJJ)"
+  },
+  {
+   "fieldname": "staatsangehoerigkeit",
+   "fieldtype": "Select",
+   "label": "Staatsangehoerigkeit",
+   "options": "\nDeutschland\nAlbanien\nBosnien und Herzegowina\nAndorra\nBelgien\nBulgarien\nD\u00e4nemark\nEstland\nFinnland\nFrankreich\nKroatien\nSlowenien\nSerbien und Montenegro\nSerbien (einschl. Kosovo)\nGriechenland\nIrland\nIsland\nItalien\nJugoslawien\nLettland\nMontenegro\nLiechtenstein\nLitauen\nLuxemburg\nNordmazedonien\nMalta\nMoldau\nMonaco\nNiederlande\nNorwegen\nKosovo\n\u00d6sterreich\nPolen\nPortugal\nRum\u00e4nien\nSlowakei\nSan Marino\nSchweden\nSchweiz\nRussische F\u00f6deration\nSpanien\nT\u00fcrkei\nTschechien\nUngarn\nUkraine\nVatikanstadt\nVereinigtes K\u00f6nigreich\nWeissrussland\nSerbien\nZypern\nGibraltar\n\u00dcbriges Europa\nAlgerien\nAngola\nEritrea\n\u00c4thiopien\nLesotho\nBotsuana\nBenin\nDschibuti\nC\u00f4te d\u2018Ivoire\nNigeria\nSimbabwe\nGabun\nGambia\nGhana\nMauretanien\nCabo Verde\nKenia\nKomoren\nKongo\nKongo, Demokratische Republik\nLiberia\nLibyen\nMadagaskar\nMali\nMarokko\nMauritius\nMosambik\nNiger\nMalawi\nSambia\nBurkina Faso\nGuinea-Bissau\nGuinea\nKamerun\nS\u00fcdafrika\nRuanda\nNamibia\nS\u00e3o Tom\u00e9 und Pr\u00edncipe\nSenegal\nSeychellen\nSierra Leone\nSomalia\n\u00c4quatorialguinea\nSudan (vor der Teilung des Landes)\nSudan\nS\u00fcdsudan\nEswatini\nTansania\nTogo\nTschad\nTunesien\nUganda\n\u00c4gypten\nZentralafrikanische Republik\nBurundi\nBritisch abh\u00e4ngige Gebiete in Afrika\n\u00dcbriges Afrika\nAntigua und Barbuda\nBarbados\nArgentinien\nBahamas\nBolivien\nBrasilien\nGuyana\nBelize\nChile\nDominica\nCosta Rica\nDominikanische Republik\nEcuador\nEl Salvador\nGrenada\nGuatemala\nHaiti\nHonduras\nKanada\nKolumbien\nKuba\nMexiko\nNicaragua\nJamaika\nPanama\nParaguay\nPeru\nSuriname\nUruguay\nSt. Lucia\nVenezuela\nVereinigte Staaten\nSt. Vincent und die Grenadinen\nSt. Kitts und Nevis\nTrinidad und Tobago\nBritisch abh\u00e4ngige Gebiete in Amerika\n\u00dcbriges Amerika\nHongkong\nMacau\nJemen\nArmenien\nAfghanistan\nBahrain\nAserbaidschan\nBhutan\nMyanmar\nBrunei Darussalam\nGeorgien\nSri Lanka\nVietnam\nKorea, Demokratische Volksrepublik (Nordkorea)\nIndien\nIndonesien\nIrak\nIran\nIsrael\nJapan\nKasachstan\nJordanien\nKambodscha\nKatar\nKuwait\nLaos\nKirgisistan\nLibanon\nMalediven\nOman\nMongolei\nNepal\nPal\u00e4stinensische Gebiete\nBangladesch\nPakistan\nPhilippinen\nTaiwan\nKorea, Republik (S\u00fcdkorea)\nVereinigte Arabische Emirate\nTadschikistan\nTurkmenistan\nSaudi-Arabien\nSingapur\nSyrien\nThailand\nUsbekistan\nChina\nMalaysia\n\u00dcbriges Asien\nAustralien\nSalomonen\nN\u00f6rdliche Marianen\nFidschi\nKiribati\nNauru\nVanuatu\nNeuseeland\nPalau\nPapua-Neuguinea\nTuvalu\nTonga\nSamoa\nMarshallinseln\nMikronesien\nBritisch abh. Gebiete in Australien/Ozeanien\n\u00dcbriges Ozeanien\nUnbekanntes Ausland\nstaatenlos\nungekl\u00e4rt\nohne Angabe"
+  },
+  {
+   "fieldname": "steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten",
+   "fieldtype": "Int",
+   "label": "Steuerklasse (Personaldaten\\Steuer\\Steuerkarte\\Allgemeine Daten)",
+   "length": 1
+  },
+  {
+   "fieldname": "studienbescheinigung",
+   "fieldtype": "Date",
+   "label": "Studienbescheinigung"
+  },
+  {
+   "fieldname": "column_break_cymf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "stundenlohn",
+   "fieldtype": "Float",
+   "label": "Stundenlohn",
+   "precision": "2"
+  },
+  {
+   "fieldname": "stundenlohn_1",
+   "fieldtype": "Float",
+   "label": "Stundenlohn 1",
+   "precision": "2"
+  },
+  {
+   "fieldname": "tatsaechliches_ende_der_ausbildung",
+   "fieldtype": "Date",
+   "label": "Tats\u00e4chliches Ende der Ausbildung"
+  },
+  {
+   "fieldname": "urlaubsanspruch_aktuelles_jahr",
+   "fieldtype": "Float",
+   "label": "Urlaubsanspruch aktuelles Jahr",
+   "precision": "1"
+  },
+  {
+   "fieldname": "verheiratet",
+   "fieldtype": "Select",
+   "label": "Verheiratet",
+   "options": "\nNein\nJa"
+  },
+  {
+   "fieldname": "versicherungsnummer",
+   "fieldtype": "Data",
+   "label": "Versicherungsnummer",
+   "length": 20
+  },
+  {
+   "fieldname": "voraussichtliches_ende_der_ausbildung_gem_vertrag",
+   "fieldtype": "Date",
+   "label": "Voraussichtliches Ende der Ausbildung gem. Vertrag"
+  },
+  {
+   "fieldname": "vorname_personaldaten_kinderdaten_allgemeine_angaben",
+   "fieldtype": "Data",
+   "label": "Vorname (Personaldaten\\Kinderdaten\\Allgemeine Angaben)",
+   "length": 30
+  },
+  {
+   "fieldname": "vorsatzwort_geburtsname",
+   "fieldtype": "Data",
+   "label": "Vorsatzwort (Geburtsname)",
+   "length": 14
+  },
+  {
+   "fieldname": "vorsatzwort_mitarbeitername",
+   "fieldtype": "Data",
+   "label": "Vorsatzwort (Mitarbeitername)",
+   "length": 14
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-04-08 10:53:24.749854",
+ "modified_by": "Administrator",
+ "module": "SUT App DATEV Export",
+ "name": "Personalerfassungsbogen",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
