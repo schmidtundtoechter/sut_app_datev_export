@@ -13,7 +13,15 @@ doc_events = {
         "on_update": "sut_app_datev_export.sut_app_datev_export.server_scripts.employee.employee_on_update"
     }
 }
-
+# Custom fields
+fixtures = [
+    {
+        "doctype": "Custom Field",
+        "filters": [
+            ["name", "in", ["Employee-custom_for_next_export"]]
+        ]
+    }
+]
 
 # required_apps = []
 
