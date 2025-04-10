@@ -18,7 +18,25 @@ fixtures = [
     {
         "doctype": "Custom Field",
         "filters": [
-            ["name", "in", ["Employee-custom_for_next_export"]]
+            ["name", "in", ["Employee-custom_for_next_export" , "Employee-custom_land" , "Employee-custom_anschriftenzusatz" , "Employee-custom_arbeitsverhältnis" , 
+                            "Employee-custom_befristung_arbeitserlaubnis" , "Employee-custom_befristung_aufenthaltserlaubnis" ,"Employee-custom_befristung_gdb_bescheid",
+                            "Employee-custom_ersteintritt_ins_unternehmen_" , "Employee-custom_hausnummer" ,"Employee-custom_höchste_berufsausbildung" , 
+                            "Employee-custom_höchster_schulabschluss" , "Employee-custom_ort" ,"Employee-custom_plz" , "Employee-custom_schwerbehinderung" , 
+                            "Employee-custom_steueridentnummer" , "Employee-custom_straße" , "Employee-custom_summe_gehalt_bei_offener_vertragsverhandlung" , 
+                            "Employee-custom_summe_wochenarbeitszeit" 
+                            ]]
+        ]
+    } , 
+    {
+        "dt": "Property Setter",
+        "filters": [
+            ["name", "in", [
+                "Employee-employee_number-length" , 
+                "Employee-employment_type-length" , 
+                "Employee-first_name-length" , 
+                "Employee-last_name-length" , 
+                "Employee-personal_email-length" , 
+            ]]
         ]
     }
 ]
