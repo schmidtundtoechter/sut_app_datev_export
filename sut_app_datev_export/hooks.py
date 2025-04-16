@@ -11,6 +11,10 @@ app_license = "mit"
 doc_events = {
     "Employee": {
         "on_update": "sut_app_datev_export.sut_app_datev_export.server_scripts.employee.employee_on_update"
+    } , 
+    "Personalerfassungsbogen" : {
+        "on_update": "sut_app_datev_export.sut_app_datev_export.server_scripts.personal.employee_on_update"
+
     }
 }
 # Custom fields
