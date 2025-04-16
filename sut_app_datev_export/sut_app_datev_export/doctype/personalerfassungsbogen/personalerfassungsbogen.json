@@ -1,11 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:{employee}-{employee_name}",
  "creation": "2025-04-08 09:48:50.551371",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "employee",
+  "employee_name",
   "abweichender_kontoinhaber",
   "akademischer_grad",
   "alleinerziehend",
@@ -382,17 +384,28 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "label": "Employee",
-   "options": "Employee"
+   "in_list_view": 1,
+   "label": "Mitarbeiter",
+   "options": "Employee",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Name des Mitarbeiters",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-08 10:53:24.749854",
+ "modified": "2025-04-16 09:40:53.227000",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "Personalerfassungsbogen",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

@@ -1,6 +1,5 @@
 frappe.ui.form.on('Employee', {
     refresh: function(frm) {
-        console.log('////////////////////////////////')
         // Add Export button to Employee form
         frm.add_custom_button(__('Export to DATEV'), function() {
             frappe.confirm(
@@ -26,6 +25,23 @@ frappe.ui.form.on('Employee', {
                     });
                 }
             );
-        }, __('Actions'));
+        }, __('Aktionen'));
+    
+    
+            // Add button to navigate to the filtered list of Personalerfassungsbogen
+            frm.add_custom_button(__('View Personalerfassungsbogen'), function() {
+                frappe.set_route('List', 'Personalerfassungsbogen', {
+                    'employee': frm.doc.name
+                });
+            }, __('Aktionen'));
+
+            frm.add_custom_button(__('Create Personalerfassungsbogen'), function() {
+                frappe.new_doc('Personalerfassungsbogen', {
+                    'employee': frm.doc.name,
+                    'employee_name': frm.doc.employee_name // Assuming employee_name is the field name
+                });
+            }, __('Aktionen'));
+
+
     }
 });
