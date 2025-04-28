@@ -723,7 +723,7 @@ def map_value_to_died(field_name, value):
         "namenszusatz_mitarbeitername", "vorsatzwort_geburtsname", "vorsatzwort_mitarbeitername",
         "familienname_personaldaten_kinderdaten_allgemeine_angaben", 
         "vorname_personaldaten_kinderdaten_allgemeine_angaben",
-        "ausstellende_dienststelle", "abweichender_kontoinhaber", "akademischer_grad", 
+        "ausstellende_dienststelle", "abweichender_kontoinhaber", "abteilung_datev_lodas" ,"akademischer_grad", 
         "custom_anschriftenzusatz", "ort_der_dienststelle"
     ]:
         return value

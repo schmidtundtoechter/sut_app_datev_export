@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-26 13:23:55.065831",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "kind_nummer",
+  "vorname_personaldaten_kinderdaten_allgemeine_angaben",
+  "familienname_personaldaten_kinderdaten_allgemeine_angaben",
+  "geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben"
+ ],
+ "fields": [
+  {
+   "fieldname": "kind_nummer",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Kind Nummer",
+   "length": 2
+  },
+  {
+   "fieldname": "vorname_personaldaten_kinderdaten_allgemeine_angaben",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vorname (Personaldaten\\Kinderdaten\\Allgemeine Angaben)",
+   "length": 30
+  },
+  {
+   "fieldname": "familienname_personaldaten_kinderdaten_allgemeine_angaben",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Familienname (Personaldaten\\Kinderdaten\\Allgemeine Angaben)",
+   "length": 30
+  },
+  {
+   "fieldname": "geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Geburtsdatum (Personaldaten\\Kinderdaten\\Allgemeine Angaben)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-04-26 13:38:07.663321",
+ "modified_by": "Administrator",
+ "module": "SUT App DATEV Export",
+ "name": "Kinder Tabelle",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

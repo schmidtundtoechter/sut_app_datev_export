@@ -15,7 +15,7 @@ frappe.ui.form.on('Personalerfassungsbogen', {
                 frappe.set_route('List', 'Employee', {
                     'name': frm.doc.employee
                 });
-            }, __('Actions'));
+            }, __('Aktionen'));
         }
     }
 });

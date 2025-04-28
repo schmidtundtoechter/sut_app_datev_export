@@ -25,12 +25,7 @@ def get_employees_for_export():
             'custom_steueridentnummer', 'custom_summe_wochenarbeitszeit', 
             'custom_ort', 'employee_number', 'custom_plz', 
             'custom_befristung_gdb_bescheid', 'custom_schwerbehinderung',
-            'custom_straße', 'cell_number', 'first_name', 'custom_summe_gehalt'
-            
-            # Wage type fields - only include if they exist
-            'custom_lohnart_gg', 'custom_lohnart_p1', 'custom_lohnart_p2', 
-            'custom_lohnart_p3', 'custom_lohnart_p4', 'custom_lohnart_z1', 
-            'custom_lohnart_z2'
+            'custom_straße', 'cell_number', 'first_name'
         ]
     )
     
@@ -46,12 +41,7 @@ def get_employees_for_export():
         # Add Personalerfassungsbogen data to employee
         if personalerfassungsbogen_data:
             for field, value in personalerfassungsbogen_data.items():
-                if field != 'kinder_tabelle':
-                    employee[field] = value
-            
-            # Add children data if available
-            if 'kinder_tabelle' in personalerfassungsbogen_data and personalerfassungsbogen_data['kinder_tabelle']:
-                employee['children'] = personalerfassungsbogen_data['kinder_tabelle']
+                employee[field] = value
         
         employees_by_company[company].append(employee)
     
@@ -63,117 +53,54 @@ def get_personalerfassungsbogen_data(employee_name):
     if not frappe.db.exists('DocType', 'Personalerfassungsbogen'):
         return {}
     
-    # Get fields that exist in Personalerfassungsbogen
-    all_fields = []
-    db_fields = frappe.db.get_table_columns('Personalerfassungsbogen')
-    
-    # Standard fields to always include
-    standard_fields = [
-        'abweichender_kontoinhaber', 'akademischer_grad', 'alleinerziehend',
-        'anzahl_kinderfreibeträge', 'arbeits_ausbildungsbeginn_tt_mm_jjjj',
-        'arbeits_ausbildungsende_tt_mm_jjjj', 'arbeitsbescheinigung_im_austrittsmonat_elektr_ueberm',
-        'arbeitszeit_18_std_mit_zulassung_aa', 'ausstellende_dienststelle', 
-        'ausweis_nr_aktenzeichen', 'automatische_loeschung_nach_austritt_unterdruecken',
-        'basislohn', 'beginn_der_ausbildung', 'bescheinigung_nach_313_sgb_iii_elektronisch_ueberm',
-        'bic', 'datum_des_todes', 'eel_meldung_nach_austritt_des_arbeitnehmers',
-        'ehrenamtliche_taetigkeit', 'einmalbezuege_nach_austritt_d_arbeitnehmers_berechnen',
-        'entlohnungsform', 'erstbeschaeftigung', 'ersteintrittsdatum_fuer_aag_und_brutto_netto_verwenden',
-        'geburtsland', 'geburtsname', 'geburtsort', 'grundurlaubsanspruch',
-        'iban', 'jobticket_hoehe_des_geldwerten_vorteils',
-        'kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber',
-        'konfessionszugehoerigkeit_steuerpflichtiger', 
-        'namenszusatz_geburtsname', 'namenszusatz_mitarbeitername',
-        'ort_der_dienststelle', 'pauschalsteuer_berechnen', 'abteilung_datev_lodas',
-        'sb_ausweis_gueltig_ab_tt_mm_jjjj', 'staatsangehoerigkeit',
-        'steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten',
-        'studienbescheinigung', 'stundenlohn', 'stundenlohn_1',
-        'tatsaechliches_ende_der_ausbildung', 'urlaubsanspruch_aktuelles_jahr',
-        'verheiratet', 'versicherungsnummer',
-        'voraussichtliches_ende_der_ausbildung_gem_vertrag',
-        'vorsatzwort_geburtsname', 'vorsatzwort_mitarbeitername'
-    ]
-    
-    # Add wage fields if they exist in the database
-    wage_fields = [
-        'custom_gehalt_des_grundvertrags',
-        'custom_gehalt_projekt_1', 'custom_gehalt_projekt_2', 
-        'custom_gehalt_projekt_3', 'custom_gehalt_projekt_4',
-        'custom_zulage_zulage_1', 'custom_zulage_zulage_2',
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt',
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt_1',
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt_2',
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt_3'
-    ]
-    
-    # Filter fields to only include those that exist in the database
-    for field in standard_fields:
-        if field in db_fields:
-            all_fields.append(field)
-    
-    for field in wage_fields:
-        if field in db_fields:
-            all_fields.append(field)
-    
-    # Always include 'name' for linking to children
-    all_fields.append('name')
-    
     # Get Personalerfassungsbogen record linked to this employee
-    try:
-        personalerfassungsbogen = frappe.get_all(
-            'Personalerfassungsbogen',
-            filters={'employee': employee_name},
-            fields=all_fields
-        )
-    except Exception as e:
-        frappe.log_error(f"Error fetching Personalerfassungsbogen for {employee_name}: {str(e)}", 
-                        "DATEV Export Error")
-        return {}
+    personalerfassungsbogen = frappe.get_all(
+        'Personalerfassungsbogen',
+        filters={'employee': employee_name},
+        fields=[
+            # All fields from Personalerfassungsbogen
+            'abweichender_kontoinhaber', 'akademischer_grad', 'alleinerziehend',
+            'anzahl_kinderfreibeträge', 'arbeits_ausbildungsbeginn_tt_mm_jjjj',
+            'arbeits_ausbildungsende_tt_mm_jjjj', 'arbeitsbescheinigung_im_austrittsmonat_elektr_ueberm',
+            'arbeitszeit_18_std_mit_zulassung_aa', 'ausstellende_dienststelle', 
+            'ausweis_nr_aktenzeichen', 'automatische_loeschung_nach_austritt_unterdruecken',
+            'basislohn', 'beginn_der_ausbildung', 'bescheinigung_nach_313_sgb_iii_elektronisch_ueberm',
+            'bic', 'datum_des_todes', 'eel_meldung_nach_austritt_des_arbeitnehmers',
+            'ehrenamtliche_taetigkeit', 'einmalbezuege_nach_austritt_d_arbeitnehmers_berechnen',
+            'entlohnungsform', 'erstbeschaeftigung', 'ersteintrittsdatum_fuer_aag_und_brutto_netto_verwenden',
+            'familienname_personaldaten_kinderdaten_allgemeine_angaben',
+            'geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben',
+            'geburtsland', 'geburtsname', 'geburtsort', 'grundurlaubsanspruch',
+            'iban', 'jobticket_hoehe_des_geldwerten_vorteils',
+            'kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber', 'kind_nummer',
+            'konfessionszugehoerigkeit_steuerpflichtiger', 'lfd_brutto_vereinbart',
+            'namenszusatz_geburtsname', 'namenszusatz_mitarbeitername',
+            'ort_der_dienststelle', 'pauschalsteuer_berechnen',
+            'sb_ausweis_gueltig_ab_tt_mm_jjjj', 'staatsangehoerigkeit',
+            'steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten',
+            'studienbescheinigung', 'stundenlohn', 'stundenlohn_1',
+            'tatsaechliches_ende_der_ausbildung', 'urlaubsanspruch_aktuelles_jahr',
+            'verheiratet', 'versicherungsnummer',
+            'voraussichtliches_ende_der_ausbildung_gem_vertrag',
+            'vorname_personaldaten_kinderdaten_allgemeine_angaben',
+            'vorsatzwort_geburtsname', 'vorsatzwort_mitarbeitername'
+        ]
+    )
     
-    # Return empty dict if no record found
-    if not personalerfassungsbogen:
-        return {}
-        
-    # Get the data
-    data = personalerfassungsbogen[0]
-    peb_name = data.pop('name')
-    
-    # Get children data
-    if frappe.db.exists('DocType', 'Kinder Tabelle'):
-        try:
-            children = frappe.get_all(
-                'Kinder Tabelle',
-                filters={'parent': peb_name},
-                fields=[
-                    'kind_nummer',
-                    'vorname_personaldaten_kinderdaten_allgemeine_angaben',
-                    'familienname_personaldaten_kinderdaten_allgemeine_angaben',
-                    'geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben'
-                ],
-                order_by='kind_nummer asc'
-            )
-            
-            if children:
-                data['kinder_tabelle'] = children
-        except Exception as e:
-            frappe.log_error(f"Error fetching children for {employee_name}: {str(e)}", 
-                            "DATEV Export Error")
-    
-    return data
+    # Return the first record if found, otherwise an empty dict
+    return personalerfassungsbogen[0] if personalerfassungsbogen else {}
 
 def map_employee_to_lodas(employee):
     """Map ERPNext employee fields to LODAS field format using DIED tables."""
-    # All field mappings - with safe access using get()
+    # All field mappings
     fields_to_map = {
         # Employee identification & basic data
-        'pnr_betriebliche': f"BPNR {employee.get('name', '')}",  # Always include employee number
+        'pnr_betriebliche': f"BPNR {employee.name}",  # Always include employee number
         'duevo_familienname': employee.get('last_name', ""),
         'duevo_vorname': employee.get('first_name', ""),
         'staatsangehoerigkeit': map_value_to_died("custom_land", employee.get('custom_land')),
         'geburtsdatum_ttmmjj': format_date(employee.get('date_of_birth')),
         'geschlecht': map_value_to_died("gender", employee.get('gender')),
-        
-        # Department number
-        'abteilung_datev_lodas': employee.get('abteilung_datev_lodas', ""),
         
         # Address fields
         'adresse_strassenname': employee.get('custom_straße', ""),
@@ -229,45 +156,27 @@ def map_employee_to_lodas(employee):
         'basislohn': employee.get('basislohn', ""),
         'stundenlohn': employee.get('stundenlohn', ""),
         'stundenlohn_1': employee.get('stundenlohn_1', ""),
-        'lfd_brutto': employee.get('custom_summe_gehalt', ""),
-        'summe_gehalt': employee.get('custom_summe_gehalt', ""),
+        'lfd_brutto': employee.get('lfd_brutto_vereinbart', ""),
+        'summe_gehalt': employee.get('custom_summe_gehalt_bei_offener_vertragsverhandlung', ""),
         'pauschalsteuer': map_value_to_died("pauschalsteuer_berechnen", employee.get('pauschalsteuer_berechnen')),
         'jobticket': employee.get('jobticket_hoehe_des_geldwerten_vorteils', ""),
         'entlohnungsform': map_value_to_died("entlohnungsform", employee.get('entlohnungsform')),
         
-        # Education date fields with format correction from arbeits_ausbildungsbeginn_tt_mm_jjjj
+        # Education and training
         'arbeits_ausbildungsbeginn': format_date(employee.get('arbeits_ausbildungsbeginn_tt_mm_jjjj')),
         'arbeits_ausbildungsende': format_date(employee.get('arbeits_ausbildungsende_tt_mm_jjjj')),
+        'beginn_ausbildung': format_date(employee.get('beginn_der_ausbildung')),
+        'ende_ausbildung_tatsaechlich': format_date(employee.get('tatsaechliches_ende_der_ausbildung')),
+        'ende_ausbildung_vertrag': format_date(employee.get('voraussichtliches_ende_der_ausbildung_gem_vertrag')),
+        'studienbescheinigung': format_date(employee.get('studienbescheinigung')),
+        'urlaubsanspruch': employee.get('urlaubsanspruch_aktuelles_jahr', ""),
+        'grundurlaubsanspruch': employee.get('grundurlaubsanspruch', ""),
         
-        # Wage type fields
-        'custom_lohnart_gg': employee.get('custom_lohnart_gg', ""),
-        'custom_lohnart_p1': employee.get('custom_lohnart_p1', ""),
-        'custom_lohnart_p2': employee.get('custom_lohnart_p2', ""),
-        'custom_lohnart_p3': employee.get('custom_lohnart_p3', ""),
-        'custom_lohnart_p4': employee.get('custom_lohnart_p4', ""),
-        'custom_lohnart_z1': employee.get('custom_lohnart_z1', ""),
-        'custom_lohnart_z2': employee.get('custom_lohnart_z2', ""),
-        
-        # Wage amount fields - only include if they exist
-        'custom_gehalt_des_grundvertrags': employee.get('custom_gehalt_des_grundvertrags', ""),
-        'custom_gehalt_projekt_1': employee.get('custom_gehalt_projekt_1', ""),
-        'custom_gehalt_projekt_2': employee.get('custom_gehalt_projekt_2', ""),
-        'custom_gehalt_projekt_3': employee.get('custom_gehalt_projekt_3', ""),
-        'custom_gehalt_projekt_4': employee.get('custom_gehalt_projekt_4', ""),
-        'custom_zulage_zulage_1': employee.get('custom_zulage_zulage_1', ""),
-        'custom_zulage_zulage_2': employee.get('custom_zulage_zulage_2', ""),
-        
-        # Additional wage logic fields
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt': employee.get('custom_ist_zusätzliche_vergütung_zum_grundgehalt', ""),
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt_1': employee.get('custom_ist_zusätzliche_vergütung_zum_grundgehalt_1', ""),
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt_2': employee.get('custom_ist_zusätzliche_vergütung_zum_grundgehalt_2', ""),
-        'custom_ist_zusätzliche_vergütung_zum_grundgehalt_3': employee.get('custom_ist_zusätzliche_vergütung_zum_grundgehalt_3', ""),
-        
-        # Default empty values for child information
-        'kind_nummer': "",
-        'familienname_kind': "",
-        'vorname_kind': "",
-        'geburtsdatum_kind': "",
+        # Child information
+        'kind_nummer': employee.get('kind_nummer', ""),
+        'familienname_kind': employee.get('familienname_personaldaten_kinderdaten_allgemeine_angaben', ""),
+        'vorname_kind': employee.get('vorname_personaldaten_kinderdaten_allgemeine_angaben', ""),
+        'geburtsdatum_kind': format_date(employee.get('geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben')),
         'anzahl_kinderfreibetraege': employee.get('anzahl_kinderfreibeträge', ""),
         
         # Additional flags and indicators
@@ -293,21 +202,6 @@ def map_employee_to_lodas(employee):
     
     return fields_to_map
 
-def map_child_to_lodas(employee, child):
-    """Create a mapping specifically for a child record."""
-    # Start with the employee's basic data
-    child_mapping = map_employee_to_lodas(employee)
-    
-    # Update with child specific information
-    child_mapping.update({
-        'kind_nummer': child.get('kind_nummer', ""),
-        'familienname_kind': child.get('familienname_personaldaten_kinderdaten_allgemeine_angaben', ""),
-        'vorname_kind': child.get('vorname_personaldaten_kinderdaten_allgemeine_angaben', ""),
-        'geburtsdatum_kind': format_date(child.get('geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben')),
-    })
-    
-    return child_mapping
-
 def validate_employee_data(employees_by_company):
     """Validate that essential employee data is complete for LODAS export."""
     validation_errors = []
@@ -316,34 +210,19 @@ def validate_employee_data(employees_by_company):
         for employee in employees:
             # Check for essential fields (add more as needed)
             if not employee.get('last_name'):
-                validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Missing last name")
+                validation_errors.append(f"Employee {employee.name}: Missing last name")
             
             if not employee.get('first_name'):
-                validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Missing first name")
+                validation_errors.append(f"Employee {employee.name}: Missing first name")
             
             if not employee.get('date_of_birth'):
-                validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Missing date of birth")
+                validation_errors.append(f"Employee {employee.name}: Missing date of birth")
                 
             if not employee.get('gender'):
-                validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Missing gender")
+                validation_errors.append(f"Employee {employee.name}: Missing gender")
                 
             if not employee.get('date_of_joining'):
-                validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Missing joining date")
-            
-            # Validate child data if children exist
-            if employee.get('children'):
-                for i, child in enumerate(employee['children']):
-                    if not child.get('kind_nummer'):
-                        validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Child {i+1} missing number")
-                    
-                    if not child.get('vorname_personaldaten_kinderdaten_allgemeine_angaben'):
-                        validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Child {i+1} missing first name")
-                    
-                    if not child.get('familienname_personaldaten_kinderdaten_allgemeine_angaben'):
-                        validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Child {i+1} missing last name")
-                        
-                    if not child.get('geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben'):
-                        validation_errors.append(f"Employee {employee.get('name', 'Unknown')}: Child {i+1} missing birth date")
+                validation_errors.append(f"Employee {employee.name}: Missing joining date")
     
     if validation_errors:
         error_message = "\n".join(validation_errors)

@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{abteilungscode}-{abteilungsbezeichnung}",
+ "creation": "2025-04-27 12:51:58.721051",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "abteilungscode",
+  "abteilungsbezeichnung"
+ ],
+ "fields": [
+  {
+   "fieldname": "abteilungscode",
+   "fieldtype": "Data",
+   "label": "Abteilungscode",
+   "length": 8
+  },
+  {
+   "fieldname": "abteilungsbezeichnung",
+   "fieldtype": "Data",
+   "label": "Abteilungsbezeichnung",
+   "length": 50
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-04-27 12:56:43.622206",
+ "modified_by": "Administrator",
+ "module": "SUT App DATEV Export",
+ "name": "Abteilung fuer DATEV Lodas Export",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
