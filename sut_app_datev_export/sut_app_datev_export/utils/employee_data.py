@@ -290,7 +290,19 @@ def map_employee_to_lodas(employee):
         'datum_des_todes': format_date(employee.get('datum_des_todes')),
         'staatsangehoerigkeit_peb': map_value_to_died("staatsangehoerigkeit", employee.get('staatsangehoerigkeit')),
     }
-    
+        # Fetch department code from linked Abteilung DocType
+    if employee.get('abteilung_datev_lodas'):
+        try:
+            department_doc = frappe.get_doc("Abteilung fuer DATEV Lodas Export", employee['abteilung_datev_lodas'])
+            employee['abteilungscode'] = department_doc.abteilungscode
+            # employee['abteilungsbezeichnung'] = department_doc.abteilungsbezeichnung  # optional for UI
+        except Exception as e:
+            frappe.log_error(f"Could not fetch Abteilung fields: {str(e)}", "DATEV Export Error")
+
+    # Map to export field
+    fields_to_map['kst_abteilungs_nr'] = employee.get('abteilungscode', "")
+
+
     return fields_to_map
 
 def map_child_to_lodas(employee, child):
