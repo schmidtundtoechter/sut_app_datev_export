@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "employee",
+  "abteilung_datev_lodas",
   "employee_name",
   "abweichender_kontoinhaber",
   "akademischer_grad",
@@ -31,8 +32,6 @@
   "entlohnungsform",
   "erstbeschaeftigung",
   "ersteintrittsdatum_fuer_aag_und_brutto_netto_verwenden",
-  "familienname_personaldaten_kinderdaten_allgemeine_angaben",
-  "geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben",
   "geburtsland",
   "geburtsname",
   "geburtsort",
@@ -40,10 +39,10 @@
   "iban",
   "jobticket_hoehe_des_geldwerten_vorteils",
   "kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber",
+  "section_break_bbmd",
+  "kinder_tabelle",
   "section_break_bkom",
-  "kind_nummer",
   "konfessionszugehoerigkeit_steuerpflichtiger",
-  "lfd_brutto_vereinbart",
   "namenszusatz_geburtsname",
   "namenszusatz_mitarbeitername",
   "ort_der_dienststelle",
@@ -60,7 +59,6 @@
   "verheiratet",
   "versicherungsnummer",
   "voraussichtliches_ende_der_ausbildung_gem_vertrag",
-  "vorname_personaldaten_kinderdaten_allgemeine_angaben",
   "vorsatzwort_geburtsname",
   "vorsatzwort_mitarbeitername"
  ],
@@ -199,17 +197,6 @@
    "options": "\nNein\nJa"
   },
   {
-   "fieldname": "familienname_personaldaten_kinderdaten_allgemeine_angaben",
-   "fieldtype": "Data",
-   "label": "Familienname (Personaldaten\\Kinderdaten\\Allgemeine Angaben)",
-   "length": 30
-  },
-  {
-   "fieldname": "geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben",
-   "fieldtype": "Date",
-   "label": "Geburtsdatum (Personaldaten\\Kinderdaten\\Allgemeine Angaben)"
-  },
-  {
    "fieldname": "geburtsland",
    "fieldtype": "Select",
    "label": "Geburtsland",
@@ -256,22 +243,10 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "kind_nummer",
-   "fieldtype": "Int",
-   "label": "Kind Nummer",
-   "length": 2
-  },
-  {
    "fieldname": "konfessionszugehoerigkeit_steuerpflichtiger",
    "fieldtype": "Select",
    "label": "Konfessionszugeh\u00f6rigkeit Steuerpflichtiger",
    "options": "\nKonfessionslos / Keine Kirchensteuerberechnung\nev - Evangelische Kirchensteuer\nib - Israelitische Religionsgemeinschaft Baden\nih - J\u00fcdische Kultussteuer\nil - Israelitische Kultussteuer der kultusberechtigten Gemeinden\nis - Israelitische / J\u00fcdische Kultussteuer\niw - Israelitische Religionsgemeinschaft W\u00fcrttembergs\njd - J\u00fcdische Kultussteuer\njh - J\u00fcdische Kultussteuer\nlt - Evangelisch lutherisch (bis 12/2015)\nrf - Evangelisch reformiert (bis 12/2015)\nrk - R\u00f6misch-Katholische Kirchensteuer\nak - Altkatholische Kirchensteuer\nfa - Freie Religionsgemeinschaft Alzey\nfb - Freireligi\u00f6se Landesgemeinde Baden\nfg - Freireligi\u00f6se Landesgemeinde Pfalz\nfm - Freireligi\u00f6se Gemeinde Mainz\nfr - Franz\u00f6sisch reformiert (bis 12/2015)\nfs - Freireligi\u00f6se Gemeinde Offenbach/Main"
-  },
-  {
-   "fieldname": "lfd_brutto_vereinbart",
-   "fieldtype": "Float",
-   "label": "Lfd. Brutto vereinbart",
-   "precision": "2"
   },
   {
    "fieldname": "namenszusatz_geburtsname",
@@ -364,12 +339,6 @@
    "label": "Voraussichtliches Ende der Ausbildung gem. Vertrag"
   },
   {
-   "fieldname": "vorname_personaldaten_kinderdaten_allgemeine_angaben",
-   "fieldtype": "Data",
-   "label": "Vorname (Personaldaten\\Kinderdaten\\Allgemeine Angaben)",
-   "length": 30
-  },
-  {
    "fieldname": "vorsatzwort_geburtsname",
    "fieldtype": "Data",
    "label": "Vorsatzwort (Geburtsname)",
@@ -396,12 +365,28 @@
    "fieldtype": "Data",
    "label": "Name des Mitarbeiters",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_bbmd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "kinder_tabelle",
+   "fieldtype": "Table",
+   "label": "Kinder Tabelle",
+   "options": "Kinder Tabelle"
+  },
+  {
+   "fieldname": "abteilung_datev_lodas",
+   "fieldtype": "Link",
+   "label": "Abteilung (DATEV Lodas)",
+   "options": "Abteilung fuer DATEV Lodas Export"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-16 09:40:53.227000",
+ "modified": "2025-04-28 15:51:47.487908",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "Personalerfassungsbogen",

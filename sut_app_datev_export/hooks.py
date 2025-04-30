@@ -27,7 +27,9 @@ fixtures = [
                             "Employee-custom_ersteintritt_ins_unternehmen_" , "Employee-custom_hausnummer" ,"Employee-custom_höchste_berufsausbildung" , 
                             "Employee-custom_höchster_schulabschluss" , "Employee-custom_ort" ,"Employee-custom_plz" , "Employee-custom_schwerbehinderung" , 
                             "Employee-custom_steueridentnummer" , "Employee-custom_straße" , "Employee-custom_summe_gehalt_bei_offener_vertragsverhandlung" , 
-                            "Employee-custom_summe_wochenarbeitszeit" 
+                            "Employee-custom_summe_wochenarbeitszeit" , "Employee-custom_lohnart_gg" , "Employee-custom_lohnart_p1" , 
+                            "Employee-custom_lohnart_p2" , "Employee-custom_lohnart_p3" , "Employee-custom_lohnart_p4" , "Employee-custom_lohnart_z1" , 
+                            "Employee-custom_lohnart_z2" , "Employee-custom_summe_gehalt"
                             ]]
         ]
     } , 
@@ -40,6 +42,10 @@ fixtures = [
                 "Employee-first_name-length" , 
                 "Employee-last_name-length" , 
                 "Employee-personal_email-length" , 
+                "Employee-marital_status-hidden" , 
+                "Employee-bank_ac_no-hidden" , 
+                "Employee-iban-hidden",
+                "Employee-employment_type-options"
             ]]
         ]
     }

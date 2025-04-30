@@ -14,6 +14,7 @@ def send_export_email(recipient, file_paths):
     for file_info in file_paths:
         file_path = file_info['path']
         filename = file_info['filename']
+        
         with open(file_path, 'rb') as f:
             content = f.read()
             
@@ -54,15 +55,14 @@ def format_email_message(file_paths):
     """Format detailed email message."""
     message = "<p>DATEV LODAS export completed successfully.</p>"
     message += "<table border='1' cellpadding='5' style='border-collapse: collapse;'>"
-    message += "<tr><th>Company</th><th>Employees</th><th>Children</th><th>File</th></tr>"
+    message += "<tr><th>Company</th><th>Employees</th><th>File</th></tr>"
     
     for file_info in file_paths:
         company = file_info['company']
         employee_count = file_info['employee_count']
-        children_count = file_info.get('children_count', 0)
         filename = file_info['filename']
         
-        message += f"<tr><td>{company}</td><td>{employee_count}</td><td>{children_count}</td><td>{filename}</td></tr>"
+        message += f"<tr><td>{company}</td><td>{employee_count}</td><td>{filename}</td></tr>"
     
     message += "</table>"
     message += "<p>The export flags for these employees have been reset.</p>"
