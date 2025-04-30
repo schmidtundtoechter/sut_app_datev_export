@@ -106,7 +106,7 @@ def generate_record_description():
     
     # Salary information
     description += "8;u_lod_psd_gehalt;pnr_betriebliche#psd;basislohn#psd;stundenlohn#psd;stundenlohn_1#psd;"
-    description += "lfd_brutto#psd;summe_gehalt#psd;pauschalsteuer#psd;jobticket#psd;entlohnungsform#psd;\n"
+    description += "summe_gehalt#psd;pauschalsteuer#psd;jobticket#psd;entlohnungsform#psd;\n"
     
     # Education and training
     description += "9;u_lod_psd_bildung;pnr_betriebliche#psd;arbeits_ausbildungsbeginn#psd;arbeits_ausbildungsende#psd;"
@@ -262,7 +262,7 @@ def generate_employee_basic_records(employee):
         line += f'{mapped_data["basislohn"]};'
         line += f'{mapped_data["stundenlohn"]};'
         line += f'{mapped_data["stundenlohn_1"]};'
-        line += f'{mapped_data["lfd_brutto"]};'
+        # line += f'{mapped_data["lfd_brutto"]};'
         line += f'{mapped_data["summe_gehalt"]};'
         line += f'{mapped_data["pauschalsteuer"]};'
         line += f'{mapped_data["jobticket"]};'
@@ -351,7 +351,7 @@ def generate_wage_type_records(employee):
             supplement_field = f'custom_zulage_zulage_{i}'
             
             # Only include if field exists and has a value
-            if (employee.get(field_name) and employee.get(field_name) != "999" and 
+            if (employee.get(field_name) and employee.get(field_name) != "998" and 
                 employee.get(supplement_field) and str(employee.get(supplement_field)).strip()):
                 
                 line = '11;'

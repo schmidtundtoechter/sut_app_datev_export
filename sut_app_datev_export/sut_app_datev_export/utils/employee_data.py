@@ -25,7 +25,7 @@ def get_employees_for_export():
             'custom_steueridentnummer', 'custom_summe_wochenarbeitszeit', 
             'custom_ort', 'employee_number', 'custom_plz', 
             'custom_befristung_gdb_bescheid', 'custom_schwerbehinderung',
-            'custom_straße', 'cell_number', 'first_name', 'custom_summe_gehalt'
+            'custom_straße', 'cell_number', 'first_name', 'custom_summe_gehalt',
             
             # Wage type fields - only include if they exist
             'custom_lohnart_gg', 'custom_lohnart_p1', 'custom_lohnart_p2', 
@@ -229,7 +229,7 @@ def map_employee_to_lodas(employee):
         'basislohn': employee.get('basislohn', ""),
         'stundenlohn': employee.get('stundenlohn', ""),
         'stundenlohn_1': employee.get('stundenlohn_1', ""),
-        'lfd_brutto': employee.get('custom_summe_gehalt', ""),
+        # 'lfd_brutto': employee.get('custom_summe_gehalt', ""),
         'summe_gehalt': employee.get('custom_summe_gehalt', ""),
         'pauschalsteuer': map_value_to_died("pauschalsteuer_berechnen", employee.get('pauschalsteuer_berechnen')),
         'jobticket': employee.get('jobticket_hoehe_des_geldwerten_vorteils', ""),

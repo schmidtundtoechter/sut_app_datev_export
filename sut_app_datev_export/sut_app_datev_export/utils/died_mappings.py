@@ -706,7 +706,7 @@ def map_value_to_died(field_name, value):
     
     # Handle numeric fields that don't need mapping (passthrough)
     if field_name in [
-        "lfd_brutto_vereinbart", "jobticket_hoehe_des_geldwerten_vorteils", 
+         "jobticket_hoehe_des_geldwerten_vorteils", 
         "basislohn", "stundenlohn", "stundenlohn_1", 
         "anzahl_kinderfreibeträge",
         "grundurlaubsanspruch", "urlaubsanspruch_aktuelles_jahr", 
