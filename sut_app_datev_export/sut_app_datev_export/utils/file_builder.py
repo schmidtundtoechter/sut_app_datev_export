@@ -130,6 +130,9 @@ def generate_record_description():
     description += "13;u_lod_psd_dokumente;pnr_betriebliche#psd;ausweis_nr#psd;ausstellende_dienststelle#psd;"
     description += "sb_ausweis_gueltig#psd;ort_dienststelle#psd;datum_des_todes#psd;staatsangehoerigkeit_peb#psd;\n"
     
+        # Department record (Abteilung)
+    description += "14;u_lod_psd_taetigkeit;pnr_betriebliche#psd;kst_abteilungs_nr#psd;\n"
+
     description += "\n"
     return description
 
@@ -478,6 +481,13 @@ def generate_employee_additional_records(employee):
         line += f'{staatsangehoerigkeit_peb};\n'
         data += line
         
+
+                # Record type 14: Department (Abteilung)
+        line = '14;'
+        line += f'"{mapped_data["pnr_betriebliche"]}";'
+        line += f'"{mapped_data["kst_abteilungs_nr"]}";\n'
+        data += line
+
     except KeyError as e:
         frappe.log_error(f"Missing key in employee data: {str(e)} for employee {employee.get('name', 'Unknown')}", 
                       "DATEV Export Error")
