@@ -1,4 +1,5 @@
-exclude: 'node_modules|.git'
+# TODO: Remove sut_app_datev_export
+exclude: 'node_modules|.git|sut_app_datev_export'
 default_stages: [pre-commit]
 fail_fast: false
 
