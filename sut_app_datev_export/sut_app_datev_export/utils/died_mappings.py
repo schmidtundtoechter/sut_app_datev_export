@@ -501,7 +501,7 @@ DIED_MAPPINGS = {
         'Prefer not to say': '3',
         '': ''  # Default value
     },
-    
+
     # DIED 4604: Highest education
     "custom_höchster_schulabschluss": {
         'keine angabe': '0',
@@ -512,7 +512,7 @@ DIED_MAPPINGS = {
         'abschluss unbekannt': '8',
         '': ''  # Default value
     },
-    
+
     # DIED 4601: Professional education
     "custom_höchste_berufsausbildung": {
         'keine angabe': '0',
@@ -525,21 +525,21 @@ DIED_MAPPINGS = {
         'abschluss unbekannt': '9',
         '': ''  # Default value
     },
-    
+
     # DIED 4040: First employment
     "erstbeschaeftigung": {
         'nein': '0',
         'ja': '1',
         '': ''  # Default value
     },
-    
+
     # DIED 440: Single parent / various yes/no fields
     "alleinerziehend": {
         'nein': '0',
         'ja': '1',
         '': ''  # Default value
     },
-    
+
     # All yes/no fields with same mapping
     "arbeitszeit_18_std_mit_zulassung_aa": {
         'nein': '0',
@@ -586,7 +586,7 @@ DIED_MAPPINGS = {
         'ja': '1',
         '': ''
     },
-    
+
     # DIED 4574: Employment relationship
     "custom_arbeitsverhältnis": {
         'unbefristet': '0',
@@ -594,7 +594,7 @@ DIED_MAPPINGS = {
         'zweckbefristet': '2',
         '': ''  # Default value
     },
-    
+
     # DIED 4609: Remuneration form
     "entlohnungsform": {
         'stundenlohn': '0',
@@ -602,7 +602,7 @@ DIED_MAPPINGS = {
         'gehalt': '2',
         '': ''  # Default to Gehalt
     },
-    
+
     # DIED 4630: Main/secondary employer
     "kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber": {
         'keine angabe': '0',
@@ -610,7 +610,7 @@ DIED_MAPPINGS = {
         'nebenarbeitgeber': '2',
         '': ''  # Default value
     },
-    
+
     # DIED 4624: Religious confession (Kirchensteuer)
     "konfessionszugehoerigkeit_steuerpflichtiger": {
         'konfessionslos / keine kirchensteuerberechnung': '0',
@@ -634,7 +634,7 @@ DIED_MAPPINGS = {
         'rf - evangelisch reformiert (bis 12/2015)': '18',
         '': ''  # Default value
     },
-    
+
     # DIED 4640: Disability status
     "custom_schwerbehinderung": {
         'nein': '0',
@@ -642,14 +642,14 @@ DIED_MAPPINGS = {
         '20 prozent': '2',
         '': ''  # Default value
     },
-    
+
     # DIED 4214: Birth country - using same mapping as geburtsland in Personalerfassungsbogen
     "geburtsland": get_birth_country_mapping(),
-    
+
     # DIED 4213: Nationality (country codes)
     "custom_land": get_country_code_mapping(),
     "staatsangehoerigkeit": get_country_code_mapping(),
-    
+
     # DIED 1566: Tax class
     "steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten": {
         '1': '1',
@@ -660,7 +660,7 @@ DIED_MAPPINGS = {
         '6': '6',
         '': ''  # Default to class 1
     },
-    
+
     # DIED 460: Pauschalsteuer berechnen
     "pauschalsteuer_berechnen": {
         'nein': '0',
@@ -675,7 +675,7 @@ def format_date(date_str):
     """Format date to DD.MM.YYYY format."""
     if not date_str:
         return ""
-    
+
     try:
         date_obj = datetime.strptime(str(date_str), '%Y-%m-%d')
         return date_obj.strftime('%d.%m.%Y')
@@ -687,10 +687,10 @@ def map_value_to_died(field_name, value):
     # Skip mapping for empty values
     if value is None:
         return ""
-    
+
     # Convert value to lowercase for case-insensitive mapping
     value_lower = str(value).lower() if value else ""
-    
+
     # Handle special case for date fields
     if field_name in [
         "date_of_birth", "date_of_joining", "relieving_date",
@@ -703,42 +703,42 @@ def map_value_to_died(field_name, value):
         "studienbescheinigung", "beginn_der_ausbildung"
     ]:
         return format_date(value)
-    
+
     # Handle numeric fields that don't need mapping (passthrough)
     if field_name in [
-         "jobticket_hoehe_des_geldwerten_vorteils", 
-        "basislohn", "stundenlohn", "stundenlohn_1", 
+         "jobticket_hoehe_des_geldwerten_vorteils",
+        "basislohn", "stundenlohn", "stundenlohn_1",
         "anzahl_kinderfreibeträge",
-        "grundurlaubsanspruch", "urlaubsanspruch_aktuelles_jahr", 
+        "grundurlaubsanspruch", "urlaubsanspruch_aktuelles_jahr",
         "custom_summe_wochenarbeitszeit", "kind_nummer"
     ]:
         return value
-    
+
     # Handle string fields that don't need mapping (passthrough)
     if field_name in [
-        "last_name", "first_name", "personal_email", "cell_number", 
+        "last_name", "first_name", "personal_email", "cell_number",
         "custom_straße", "custom_hausnummer", "custom_ort", "custom_plz",
         "iban", "bic", "geburtsname", "geburtsort", "versicherungsnummer",
         "ausweis_nr_aktenzeichen", "employee_number", "namenszusatz_geburtsname",
         "namenszusatz_mitarbeitername", "vorsatzwort_geburtsname", "vorsatzwort_mitarbeitername",
-        "familienname_personaldaten_kinderdaten_allgemeine_angaben", 
+        "familienname_personaldaten_kinderdaten_allgemeine_angaben",
         "vorname_personaldaten_kinderdaten_allgemeine_angaben",
-        "ausstellende_dienststelle", "abweichender_kontoinhaber", "abteilung_datev_lodas" ,"akademischer_grad", 
+        "ausstellende_dienststelle", "abweichender_kontoinhaber", "abteilung_datev_lodas" ,"akademischer_grad",
         "custom_anschriftenzusatz", "ort_der_dienststelle"
     ]:
         return value
-    
+
     # Check if field has a mapping
     if field_name in DIED_MAPPINGS:
         mapping = DIED_MAPPINGS[field_name]
-        
+
         # Try to get mapped value using lowercase for case-insensitive matching
         result = mapping.get(value_lower, "")
-        
+
         # If no mapping found, log an error and use default
         if not result and value_lower:
             frappe.log_error(
-                f"Value '{value}' for field '{field_name}' has no DIED mapping", 
+                f"Value '{value}' for field '{field_name}' has no DIED mapping",
                 "DATEV Export Error"
             )
             result = mapping.get('', "")  # Get default value
@@ -747,5 +747,5 @@ def map_value_to_died(field_name, value):
     else:
         # For fields without specific mappings, return the original value
         result = value
-    
+
     return result

@@ -26,8 +26,8 @@ frappe.ui.form.on('Employee', {
                 }
             );
         }, __('Aktionen'));
-    
-    
+
+
             // Add button to navigate to the filtered list of Personalerfassungsbogen
             frm.add_custom_button(__('View Personalerfassungsbogen'), function() {
                 frappe.set_route('List', 'Personalerfassungsbogen', {
