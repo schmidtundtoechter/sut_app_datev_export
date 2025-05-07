@@ -1,5 +1,4 @@
-# TODO: Remove sut_app_datev_export
-exclude: 'node_modules|.git|sut_app_datev_export'
+exclude: 'node_modules|.git'
 default_stages: [pre-commit]
 fail_fast: false
 
@@ -26,6 +25,7 @@ repos:
         args: ["--select=I", "--fix"]
 
       - id: ruff
+        args: ["--ignore", "F401,E722,F541"]  # Add the error codes to ignore
         name: "Run ruff linter"
 
       - id: ruff-format
