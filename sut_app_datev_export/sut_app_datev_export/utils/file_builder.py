@@ -394,6 +394,7 @@ def generate_festbezuege_records(employee):
             # Always get lohnart_nummer (default 998 if not available)
             lohnart_nummer = employee.get(field_name, "998")
             
+            
             # Always output the festbezuege entry
             line = '15;'
             line += f'"{mapped_data["pnr_betriebliche"]}";'
