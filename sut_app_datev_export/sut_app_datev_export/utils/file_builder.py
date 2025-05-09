@@ -117,9 +117,8 @@ def generate_record_description():
     description += "10;u_lod_psd_kindergeld;pnr_betriebliche#psd;kind_nummer#psd;vorname_kind#psd;familienname_kind#psd;"
     description += "geburtsdatum_kind#psd;anzahl_kinderfreibetraege#psd;\n"
     
-    # Fixed salary components (wage types/salary elements)
-    # Add lfd_brutto_vereinbart#psd to record type 11
-    description += "11;u_lod_psd_lohn_gehalt_bezuege;pnr_betriebliche#psd;lohnart_nummer#psd;betrag#psd;intervall#psd;kuerzung#psd;lfd_brutto_vereinbart#psd;\n"
+    # Fixed salary components with lfd_brutto_vereinbart field only
+    description += "11;u_lod_psd_lohn_gehalt_bezuege;pnr_betriebliche#psd;lfd_brutto_vereinbart#psd;\n"
     
     # Additional flags and indicators
     description += "12;u_lod_psd_flags;pnr_betriebliche#psd;erstbeschaeftigung#psd;arbeitszeit_18_std#psd;"
@@ -133,6 +132,9 @@ def generate_record_description():
     
     # Department record (Abteilung)
     description += "14;u_lod_psd_taetigkeit;pnr_betriebliche#psd;kst_abteilungs_nr#psd;\n"
+    
+    # Add separate table for u_lod_psd_festbezuege (as the last record type) with 7 fields
+    description += "15;u_lod_psd_festbezuege;pnr_betriebliche#psd;lohnart_nummer#psd;betrag#psd;intervall#psd;kuerzung#psd;feld6#psd;feld7#psd;\n"
 
     description += "\n"
     return description
@@ -166,11 +168,14 @@ def generate_complete_employee_records(employee):
             for child in employee['children']:
                 data += generate_child_record(employee, child)
         
-        # Fixed salary components (record 11)
-        data += generate_wage_type_records(employee)
+        # Record 11 for lfd_brutto_vereinbart
+        data += generate_lohn_gehalt_record(employee)
         
-        # Flags and documents (records 12-13)
+        # Flags and documents (records 12-14)
         data += generate_employee_additional_records(employee)
+        
+        # Fixed salary components (record 15) - last
+        data += generate_festbezuege_records(employee)
     except Exception as e:
         frappe.log_error(f"Error in generate_complete_employee_records for {employee.get('name', 'Unknown')}: {str(e)}", 
                       "DATEV Export Error")
@@ -309,84 +314,203 @@ def generate_employee_basic_records(employee):
     
     return data
 
-def generate_wage_type_records(employee):
-    """Generate fixed wage type records (type 11) for an employee."""
+def generate_lohn_gehalt_record(employee):
+    """Generate lohn_gehalt_bezuege record (type 11) with lfd_brutto_vereinbart."""
     data = ""
     mapped_data = map_employee_to_lodas(employee)
     
     try:
-        # Array to track which wage types have been processed
-        processed_wage_types = [False] * 7  # For types 1-7
+        # Get the lfd_brutto_vereinbart value from custom_summe_gehalt
+        lfd_brutto_vereinbart = mapped_data.get("lfd_brutto_vereinbart", "")
         
-        # Get the value for lfd_brutto_vereinbart from custom_summe_gehalt
-        lfd_brutto_vereinbart = employee.get('custom_summe_gehalt', "")
+        # Generate one record for lfd_brutto_vereinbart
+        line = '11;'
+        line += f'"{mapped_data["pnr_betriebliche"]}";'
+        line += f'{lfd_brutto_vereinbart};\n'
+        data += line
+    except Exception as e:
+        frappe.log_error(f"Error in generate_lohn_gehalt_record for employee {employee.get('name', 'Unknown')}: {str(e)}", 
+                      "DATEV Export Error")
+        # Return empty string to continue with export
+        return ""
+    
+    return data
+
+def generate_festbezuege_records(employee):
+    """Generate festbezuege records (type 15) - should appear last."""
+    data = ""
+    mapped_data = map_employee_to_lodas(employee)
+    
+    try:
+        # Always create exactly 7 wage type records for each employee
         
-        # Process basic salary (Grundgehalt)
+        # 1. Grundgehalt (GG) - lohnart_nummer 1
         basic_salary = determine_basic_salary(employee)
-        if basic_salary:
-            line = '11;'
-            line += f'"{mapped_data["pnr_betriebliche"]}";'
-            line += f'1;'  # lohnart_nummer 1 for Grundgehalt
-            line += f'{basic_salary};'  # Amount
-            line += f'0;'  # intervall (0 = monthly)
-            line += f'0;'  # kuerzung (0 = no reduction)
-            line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
-            data += line
-            processed_wage_types[0] = True
+        lohnart_gg = employee.get('custom_lohnart_gg', "999")
         
-        # Process project salaries (custom_lohnart_p1 to custom_lohnart_p4)
+        # Always output record 1 (Grundgehalt)
+        line = '15;'
+        line += f'"{mapped_data["pnr_betriebliche"]}";'
+        line += f'{lohnart_gg};'  # Use the actual lohnart_nummer value or 999 default
+        
+        # Use actual amount if available, otherwise 0
+        amount = "0"
+        if basic_salary:
+            amount = basic_salary
+        
+        line += f'{amount};'  # Amount
+        line += f'0;'  # intervall (0 = monthly)
+        line += f'0;\n'  # kuerzung (0 = no reduction)
+        data += line
+        
+        # 2-5. Project salaries (P1-P4) - lohnart_nummer 2-5
         for i in range(1, 5):
             field_name = f'custom_lohnart_p{i}'
             project_salary_field = f'custom_gehalt_projekt_{i}'
             
-            # Only include if field exists and has a value
-            if (employee.get(field_name) and employee.get(field_name) != "999" and 
-                employee.get(project_salary_field) and str(employee.get(project_salary_field)).strip()):
-                
-                line = '11;'
-                line += f'"{mapped_data["pnr_betriebliche"]}";'
-                line += f'{i+1};'  # lohnart_nummer (2-5 for project salaries)
-                line += f'{employee.get(project_salary_field)};'  # Amount
-                line += f'0;'  # intervall (0 = monthly)
-                line += f'0;'  # kuerzung (0 = no reduction)
-                line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
-                data += line
-                processed_wage_types[i] = True
+            # Always get lohnart_nummer (default 999 if not available)
+            lohnart_nummer = employee.get(field_name, "999")
+            
+            # Always output the festbezuege entry 
+            line = '15;'
+            line += f'"{mapped_data["pnr_betriebliche"]}";'
+            line += f'{lohnart_nummer};'  # Use the actual lohnart_nummer value
+            
+            # Use actual amount if available, otherwise 0
+            amount = "0"
+            if employee.get(project_salary_field) and str(employee.get(project_salary_field)).strip():
+                amount = employee.get(project_salary_field)
+            
+            line += f'{amount};'  # Amount
+            line += f'0;'  # intervall (0 = monthly)
+            line += f'0;\n'  # kuerzung (0 = no reduction)
+            data += line
         
-        # Process supplementary salaries (custom_lohnart_z1, custom_lohnart_z2)
+        # 6-7. Supplementary salaries (Z1-Z2) - lohnart_nummer 6-7
         for i in range(1, 3):
             field_name = f'custom_lohnart_z{i}'
             supplement_field = f'custom_zulage_zulage_{i}'
             
-            # Only include if field exists and has a value
-            if (employee.get(field_name) and employee.get(field_name) != "998" and 
-                employee.get(supplement_field) and str(employee.get(supplement_field)).strip()):
-                
-                line = '11;'
-                line += f'"{mapped_data["pnr_betriebliche"]}";'
-                line += f'{i+5};'  # lohnart_nummer (6-7 for supplements)
-                line += f'{employee.get(supplement_field)};'  # Amount
-                line += f'0;'  # intervall (0 = monthly)
-                line += f'0;'  # kuerzung (0 = no reduction)
-                line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
-                data += line
-                processed_wage_types[i+4] = True
-        
-        # Add missing wage type records with zero values
-        for i in range(7):
-            if not processed_wage_types[i]:
-                wage_type_number = i + 1
-                line = '11;'
-                line += f'"{mapped_data["pnr_betriebliche"]}";'
-                line += f'{wage_type_number};'  # lohnart_nummer
-                line += f'0;'  # Amount (zero)
-                line += f'0;'  # intervall (0 = monthly)
-                line += f'0;'  # kuerzung (0 = no reduction)
-                line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
-                data += line
+            # Always get lohnart_nummer (default 998 if not available)
+            lohnart_nummer = employee.get(field_name, "998")
+            
+            
+            # Always output the festbezuege entry
+            line = '15;'
+            line += f'"{mapped_data["pnr_betriebliche"]}";'
+            line += f'{lohnart_nummer};'  # Use the actual lohnart_nummer value
+            
+            # Use actual amount if available, otherwise 0
+            amount = "0"
+            if employee.get(supplement_field) and str(employee.get(supplement_field)).strip():
+                amount = employee.get(supplement_field)
+            
+            line += f'{amount};'  # Amount
+            line += f'0;'  # intervall (0 = monthly)
+            line += f'0;\n'  # kuerzung (0 = no reduction)
+            data += line
     except Exception as e:
-        frappe.log_error(f"Error in generate_wage_type_records for employee {employee.get('name', 'Unknown')}: {str(e)}", 
+        frappe.log_error(f"Error in generate_festbezuege_records for employee {employee.get('name', 'Unknown')}: {str(e)}", 
                       "DATEV Export Error")
+        # Return empty string to continue with export
+        return ""
+    
+    return data
+
+def generate_employee_additional_records(employee):
+    """Generate records 12-14 for an employee."""
+    data = ""
+    mapped_data = map_employee_to_lodas(employee)
+    
+    try:
+        # Record type 12: Flags
+        line = '12;'
+        line += f'"{mapped_data["pnr_betriebliche"]}";'
+        
+        # Use safe access for all fields with defaults
+        erstbeschaeftigung = mapped_data.get("erstbeschaeftigung", "")
+        arbeitszeit_18_std = mapped_data.get("arbeitszeit_18_std", "")
+        automatische_loeschung = mapped_data.get("automatische_loeschung", "")
+        arbeitsbescheinigung = mapped_data.get("arbeitsbescheinigung", "")
+        bescheinigung_313 = mapped_data.get("bescheinigung_313", "")
+        eel_meldung = mapped_data.get("eel_meldung", "")
+        ehrenamtliche_taetigkeit = mapped_data.get("ehrenamtliche_taetigkeit", "")
+        einmalbezuege = mapped_data.get("einmalbezuege", "")
+        kennzeichnung_arbeitgeber = mapped_data.get("kennzeichnung_arbeitgeber", "")
+        ersteintrittsdatum_aag = mapped_data.get("ersteintrittsdatum_aag", "")
+        
+        line += f'{erstbeschaeftigung};'
+        line += f'{arbeitszeit_18_std};'
+        line += f'{automatische_loeschung};'
+        line += f'{arbeitsbescheinigung};'
+        line += f'{bescheinigung_313};'
+        line += f'{eel_meldung};'
+        line += f'{ehrenamtliche_taetigkeit};'
+        line += f'{einmalbezuege};'
+        line += f'{kennzeichnung_arbeitgeber};'
+        line += f'{ersteintrittsdatum_aag};\n'
+        data += line
+        
+        # Record type 13: Documents
+        line = '13;'
+        line += f'"{mapped_data["pnr_betriebliche"]}";'
+        
+        # Use safe access for all fields with defaults
+        ausweis_nr = mapped_data.get("ausweis_nr", "")
+        ausstellende_dienststelle = mapped_data.get("ausstellende_dienststelle", "")
+        sb_ausweis_gueltig = mapped_data.get("sb_ausweis_gueltig", "")
+        ort_dienststelle = mapped_data.get("ort_dienststelle", "")
+        datum_des_todes = mapped_data.get("datum_des_todes", "")
+        staatsangehoerigkeit_peb = mapped_data.get("staatsangehoerigkeit_peb", "")
+        
+        line += f'"{ausweis_nr}";'
+        line += f'"{ausstellende_dienststelle}";'
+        line += f'{sb_ausweis_gueltig};'
+        line += f'"{ort_dienststelle}";'
+        line += f'{datum_des_todes};'
+        line += f'{staatsangehoerigkeit_peb};\n'
+        data += line
+
+        # Record type 14: Department (Abteilung)
+        line = '14;'
+        line += f'"{mapped_data["pnr_betriebliche"]}";'
+        line += f'"{mapped_data["kst_abteilungs_nr"]}";\n'
+        data += line
+
+    except KeyError as e:
+        frappe.log_error(f"Missing key in employee data: {str(e)} for employee {employee.get('name', 'Unknown')}", 
+                      "DATEV Export Error")
+        # Create a placeholder for the missing field
+        mapped_data[str(e).strip("'")] = ""
+        # Try again recursively with the fixed data
+        return generate_employee_additional_records(employee)
+    except Exception as e:
+        frappe.log_error(f"Error in generate_employee_additional_records: {str(e)}", "DATEV Export Error")
+        # Return empty data to avoid failing the export completely
+        return ""
+    
+    return data
+
+def generate_child_record(employee, child):
+    """Generate a child record (type 10) for an employee."""
+    data = ""
+    
+    try:
+        mapped_data = map_child_to_lodas(employee, child)
+        
+        # Record type 10: Child information
+        line = '10;'
+        line += f'"{mapped_data["pnr_betriebliche"]}";'
+        line += f'{mapped_data["kind_nummer"]};'
+        line += f'"{mapped_data["vorname_kind"]}";'
+        line += f'"{mapped_data["familienname_kind"]}";'
+        line += f'{mapped_data["geburtsdatum_kind"]};'
+        line += f'{mapped_data["anzahl_kinderfreibetraege"]};\n'
+        
+        data += line
+    except Exception as e:
+        frappe.log_error(f"Error generating child record for employee {employee.get('name', 'Unknown')}: {str(e)}", 
+                       "DATEV Export Error")
         # Return empty string to continue with export
         return ""
     
@@ -433,106 +557,6 @@ def determine_basic_salary(employee):
                       "DATEV Export Error")
         # Return None for safety
         return None
-
-def generate_employee_additional_records(employee):
-    """Generate records 12-13 for an employee (previously 11-12)."""
-    data = ""
-    mapped_data = map_employee_to_lodas(employee)
-    
-    try:
-        # Record type 12: Flags (previously 11)
-        line = '12;'
-        line += f'"{mapped_data["pnr_betriebliche"]}";'
-        
-        # Use safe access for all fields with defaults
-        erstbeschaeftigung = mapped_data.get("erstbeschaeftigung", "")
-        arbeitszeit_18_std = mapped_data.get("arbeitszeit_18_std", "")
-        automatische_loeschung = mapped_data.get("automatische_loeschung", "")
-        arbeitsbescheinigung = mapped_data.get("arbeitsbescheinigung", "")
-        bescheinigung_313 = mapped_data.get("bescheinigung_313", "")
-        eel_meldung = mapped_data.get("eel_meldung", "")
-        ehrenamtliche_taetigkeit = mapped_data.get("ehrenamtliche_taetigkeit", "")
-        einmalbezuege = mapped_data.get("einmalbezuege", "")
-        kennzeichnung_arbeitgeber = mapped_data.get("kennzeichnung_arbeitgeber", "")
-        ersteintrittsdatum_aag = mapped_data.get("ersteintrittsdatum_aag", "")
-        
-        line += f'{erstbeschaeftigung};'
-        line += f'{arbeitszeit_18_std};'
-        line += f'{automatische_loeschung};'
-        line += f'{arbeitsbescheinigung};'
-        line += f'{bescheinigung_313};'
-        line += f'{eel_meldung};'
-        line += f'{ehrenamtliche_taetigkeit};'
-        line += f'{einmalbezuege};'
-        line += f'{kennzeichnung_arbeitgeber};'
-        line += f'{ersteintrittsdatum_aag};\n'
-        data += line
-        
-        # Record type 13: Documents (previously 12)
-        line = '13;'
-        line += f'"{mapped_data["pnr_betriebliche"]}";'
-        
-        # Use safe access for all fields with defaults
-        ausweis_nr = mapped_data.get("ausweis_nr", "")
-        ausstellende_dienststelle = mapped_data.get("ausstellende_dienststelle", "")
-        sb_ausweis_gueltig = mapped_data.get("sb_ausweis_gueltig", "")
-        ort_dienststelle = mapped_data.get("ort_dienststelle", "")
-        datum_des_todes = mapped_data.get("datum_des_todes", "")
-        staatsangehoerigkeit_peb = mapped_data.get("staatsangehoerigkeit_peb", "")
-        
-        line += f'"{ausweis_nr}";'
-        line += f'"{ausstellende_dienststelle}";'
-        line += f'{sb_ausweis_gueltig};'
-        line += f'"{ort_dienststelle}";'
-        line += f'{datum_des_todes};'
-        line += f'{staatsangehoerigkeit_peb};\n'
-        data += line
-        
-
-                # Record type 14: Department (Abteilung)
-        line = '14;'
-        line += f'"{mapped_data["pnr_betriebliche"]}";'
-        line += f'"{mapped_data["kst_abteilungs_nr"]}";\n'
-        data += line
-
-    except KeyError as e:
-        frappe.log_error(f"Missing key in employee data: {str(e)} for employee {employee.get('name', 'Unknown')}", 
-                      "DATEV Export Error")
-        # Create a placeholder for the missing field
-        mapped_data[str(e).strip("'")] = ""
-        # Try again recursively with the fixed data
-        return generate_employee_additional_records(employee)
-    except Exception as e:
-        frappe.log_error(f"Error in generate_employee_additional_records: {str(e)}", "DATEV Export Error")
-        # Return empty data to avoid failing the export completely
-        return ""
-    
-    return data
-
-def generate_child_record(employee, child):
-    """Generate a child record (type 10) for an employee."""
-    data = ""
-    
-    try:
-        mapped_data = map_child_to_lodas(employee, child)
-        
-        # Record type 10: Child information
-        line = '10;'
-        line += f'"{mapped_data["pnr_betriebliche"]}";'
-        line += f'{mapped_data["kind_nummer"]};'
-        line += f'"{mapped_data["vorname_kind"]}";'
-        line += f'"{mapped_data["familienname_kind"]}";'
-        line += f'{mapped_data["geburtsdatum_kind"]};'
-        line += f'{mapped_data["anzahl_kinderfreibetraege"]};\n'
-        
-        data += line
-    except Exception as e:
-        frappe.log_error(f"Error generating child record for employee {employee.get('name', 'Unknown')}: {str(e)}", 
-                       "DATEV Export Error")
-        # Return empty string to continue with export
-        return ""
-    
-    return data
 
 def generate_single_employee_file(employee, settings):
     """Generate LODAS file for a single employee."""
@@ -603,4 +627,3 @@ def generate_single_employee_file(employee, settings):
     'employee_count': 1,
     'children_count': children_count
 }]
-
