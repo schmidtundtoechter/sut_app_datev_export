@@ -5,10 +5,10 @@ from frappe import _
 def send_export_email(recipient, file_paths):
     """Send email with LODAS files as attachments."""
     subject = _("DATEV LODAS Export")
-    
+
     # Prepare message
     message = format_email_message(file_paths)
-    
+
     # Create attachments
     attachments = []
     for file_info in file_paths:
@@ -16,7 +16,7 @@ def send_export_email(recipient, file_paths):
         filename = file_info['filename']
         with open(file_path, 'rb') as f:
             content = f.read()
-            
+
         # Save file in ERPNext using the File doctype directly
         folder = create_datev_folder()
         file_doc = frappe.new_doc("File")
@@ -27,12 +27,12 @@ def send_export_email(recipient, file_paths):
         file_doc.attached_to_doctype = "DATEV Export SUT Settings"
         file_doc.attached_to_name = "DATEV Export SUT Settings"
         file_doc.save()
-        
+
         attachments.append({
             "fname": filename,
             "fcontent": content
         })
-    
+
     # Send email
     frappe.sendmail(
         recipients=[recipient],
@@ -42,7 +42,7 @@ def send_export_email(recipient, file_paths):
         reference_doctype="DATEV Export SUT Settings",
         reference_name="DATEV Export SUT Settings"
     )
-    
+
     # Clean up temporary files
     for file_info in file_paths:
         try:
@@ -55,18 +55,18 @@ def format_email_message(file_paths):
     message = "<p>DATEV LODAS export completed successfully.</p>"
     message += "<table border='1' cellpadding='5' style='border-collapse: collapse;'>"
     message += "<tr><th>Company</th><th>Employees</th><th>Children</th><th>File</th></tr>"
-    
+
     for file_info in file_paths:
         company = file_info['company']
         employee_count = file_info['employee_count']
         children_count = file_info.get('children_count', 0)
         filename = file_info['filename']
-        
+
         message += f"<tr><td>{company}</td><td>{employee_count}</td><td>{children_count}</td><td>{filename}</td></tr>"
-    
+
     message += "</table>"
     message += "<p>The export flags for these employees have been reset.</p>"
-    
+
     return message
 
 def create_datev_folder():
@@ -77,5 +77,5 @@ def create_datev_folder():
         folder.is_folder = 1
         folder.folder = "Home"
         folder.save()
-    
+
     return "Home/DATEV Exports"
