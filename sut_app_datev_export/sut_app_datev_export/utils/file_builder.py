@@ -85,7 +85,7 @@ def generate_record_description():
     description += "adresse_ort#psd;adresse_plz#psd;adresse_anschriftenzusatz#psd;\n"
     
     # Employment record
-    description += "3;u_lod_psd_beschaeftigung;pnr_betriebliche#psd;employment_type#psd;arbeitsverhältnis#psd;"
+    description += "3;u_lod_psd_beschaeftigung;pnr_betriebliche#psd;berufsbezeichnung#psd;arbeitsverhältnis#psd;"
     description += "eintrittsdatum#psd;austrittsdatum#psd;ersteintritt#psd;\n"
     
     # Tax and social security record
@@ -118,8 +118,9 @@ def generate_record_description():
     description += "geburtsdatum_kind#psd;anzahl_kinderfreibetraege#psd;\n"
     
     # Fixed salary components (wage types/salary elements)
-    # description += "11;u_lod_psd_festbezuege;pnr_betriebliche#psd;lohnart_nummer#psd;betrag#psd;intervall#psd;kuerzung#psd;\n"
-    description += "11;u_lod_psd_lohn_gehalt_bezuege;pnr_betriebliche#psd;lohnart_nummer#psd;betrag#psd;intervall#psd;kuerzung#psd;\n"
+    # Add lfd_brutto_vereinbart#psd to record type 11
+    description += "11;u_lod_psd_lohn_gehalt_bezuege;pnr_betriebliche#psd;lohnart_nummer#psd;betrag#psd;intervall#psd;kuerzung#psd;lfd_brutto_vereinbart#psd;\n"
+    
     # Additional flags and indicators
     description += "12;u_lod_psd_flags;pnr_betriebliche#psd;erstbeschaeftigung#psd;arbeitszeit_18_std#psd;"
     description += "automatische_loeschung#psd;arbeitsbescheinigung#psd;bescheinigung_313#psd;"
@@ -130,7 +131,7 @@ def generate_record_description():
     description += "13;u_lod_psd_dokumente;pnr_betriebliche#psd;ausweis_nr#psd;ausstellende_dienststelle#psd;"
     description += "sb_ausweis_gueltig#psd;ort_dienststelle#psd;datum_des_todes#psd;staatsangehoerigkeit_peb#psd;\n"
     
-        # Department record (Abteilung)
+    # Department record (Abteilung)
     description += "14;u_lod_psd_taetigkeit;pnr_betriebliche#psd;kst_abteilungs_nr#psd;\n"
 
     description += "\n"
@@ -206,7 +207,7 @@ def generate_employee_basic_records(employee):
         # Record type 3: Employment
         line = '3;'
         line += f'"{mapped_data["pnr_betriebliche"]}";'
-        line += f'{mapped_data["employment_type"]};'
+        line += f'"{mapped_data["berufsbezeichnung"]}";'
         line += f'{mapped_data["arbeitsverhältnis"]};'
         line += f'{mapped_data["eintrittsdatum"]};'
         line += f'{mapped_data["austrittsdatum"]};'
@@ -265,7 +266,6 @@ def generate_employee_basic_records(employee):
         line += f'{mapped_data["basislohn"]};'
         line += f'{mapped_data["stundenlohn"]};'
         line += f'{mapped_data["stundenlohn_1"]};'
-        # line += f'{mapped_data["lfd_brutto"]};'
         line += f'{mapped_data["summe_gehalt"]};'
         line += f'{mapped_data["pauschalsteuer"]};'
         line += f'{mapped_data["jobticket"]};'
@@ -318,6 +318,9 @@ def generate_wage_type_records(employee):
         # Array to track which wage types have been processed
         processed_wage_types = [False] * 7  # For types 1-7
         
+        # Get the value for lfd_brutto_vereinbart from custom_summe_gehalt
+        lfd_brutto_vereinbart = employee.get('custom_summe_gehalt', "")
+        
         # Process basic salary (Grundgehalt)
         basic_salary = determine_basic_salary(employee)
         if basic_salary:
@@ -326,7 +329,8 @@ def generate_wage_type_records(employee):
             line += f'1;'  # lohnart_nummer 1 for Grundgehalt
             line += f'{basic_salary};'  # Amount
             line += f'0;'  # intervall (0 = monthly)
-            line += f'0;\n'  # kuerzung (0 = no reduction)
+            line += f'0;'  # kuerzung (0 = no reduction)
+            line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
             data += line
             processed_wage_types[0] = True
         
@@ -344,7 +348,8 @@ def generate_wage_type_records(employee):
                 line += f'{i+1};'  # lohnart_nummer (2-5 for project salaries)
                 line += f'{employee.get(project_salary_field)};'  # Amount
                 line += f'0;'  # intervall (0 = monthly)
-                line += f'0;\n'  # kuerzung (0 = no reduction)
+                line += f'0;'  # kuerzung (0 = no reduction)
+                line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
                 data += line
                 processed_wage_types[i] = True
         
@@ -362,7 +367,8 @@ def generate_wage_type_records(employee):
                 line += f'{i+5};'  # lohnart_nummer (6-7 for supplements)
                 line += f'{employee.get(supplement_field)};'  # Amount
                 line += f'0;'  # intervall (0 = monthly)
-                line += f'0;\n'  # kuerzung (0 = no reduction)
+                line += f'0;'  # kuerzung (0 = no reduction)
+                line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
                 data += line
                 processed_wage_types[i+4] = True
         
@@ -375,7 +381,8 @@ def generate_wage_type_records(employee):
                 line += f'{wage_type_number};'  # lohnart_nummer
                 line += f'0;'  # Amount (zero)
                 line += f'0;'  # intervall (0 = monthly)
-                line += f'0;\n'  # kuerzung (0 = no reduction)
+                line += f'0;'  # kuerzung (0 = no reduction)
+                line += f'{lfd_brutto_vereinbart};\n'  # Add lfd_brutto_vereinbart value
                 data += line
     except Exception as e:
         frappe.log_error(f"Error in generate_wage_type_records for employee {employee.get('name', 'Unknown')}: {str(e)}", 

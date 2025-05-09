@@ -13,12 +13,11 @@ def get_employees_for_export():
         filters={'custom_for_next_export': 1},
         fields=[
             # Standard fields always needed
-            'name', 'company', 'employee_name',
+            'name', 'company', 'employee_name', 'designation',
             
             # All employee fields needed for DATEV export
             'custom_land', 'custom_anschriftenzusatz', 'custom_befristung_arbeitserlaubnis',
             'custom_arbeitsverhältnis', 'custom_befristung_aufenthaltserlaubnis', 'relieving_date',
-            'employment_type', 'custom_summe_gehalt_bei_offener_vertragsverhandlung',
             'date_of_joining', 'personal_email', 'custom_ersteintritt_ins_unternehmen_',
             'last_name', 'date_of_birth', 'gender', 'custom_hausnummer',
             'custom_höchster_schulabschluss', 'custom_höchste_berufsausbildung',
@@ -172,6 +171,9 @@ def map_employee_to_lodas(employee):
         'geburtsdatum_ttmmjj': format_date(employee.get('date_of_birth')),
         'geschlecht': map_value_to_died("gender", employee.get('gender')),
         
+        # Job title / Position
+        'berufsbezeichnung': employee.get('designation', ""),
+        
         # Department number
         'abteilung_datev_lodas': employee.get('abteilung_datev_lodas', ""),
         
@@ -183,7 +185,6 @@ def map_employee_to_lodas(employee):
         'adresse_anschriftenzusatz': employee.get('custom_anschriftenzusatz', ""),
         
         # Employment information
-        'employment_type': map_value_to_died("employment_type", employee.get('employment_type')),
         'arbeitsverhältnis': map_value_to_died("custom_arbeitsverhältnis", employee.get('custom_arbeitsverhältnis')),
         'eintrittsdatum': format_date(employee.get('date_of_joining')),
         'austrittsdatum': format_date(employee.get('relieving_date')),
@@ -229,8 +230,8 @@ def map_employee_to_lodas(employee):
         'basislohn': employee.get('basislohn', ""),
         'stundenlohn': employee.get('stundenlohn', ""),
         'stundenlohn_1': employee.get('stundenlohn_1', ""),
-        # 'lfd_brutto': employee.get('custom_summe_gehalt', ""),
         'summe_gehalt': employee.get('custom_summe_gehalt', ""),
+        'lfd_brutto_vereinbart': employee.get('custom_summe_gehalt', ""),  # Use custom_summe_gehalt for lfd_brutto_vereinbart
         'pauschalsteuer': map_value_to_died("pauschalsteuer_berechnen", employee.get('pauschalsteuer_berechnen')),
         'jobticket': employee.get('jobticket_hoehe_des_geldwerten_vorteils', ""),
         'entlohnungsform': map_value_to_died("entlohnungsform", employee.get('entlohnungsform')),
@@ -290,7 +291,8 @@ def map_employee_to_lodas(employee):
         'datum_des_todes': format_date(employee.get('datum_des_todes')),
         'staatsangehoerigkeit_peb': map_value_to_died("staatsangehoerigkeit", employee.get('staatsangehoerigkeit')),
     }
-        # Fetch department code from linked Abteilung DocType
+    
+    # Fetch department code from linked Abteilung DocType
     if employee.get('abteilung_datev_lodas'):
         try:
             department_doc = frappe.get_doc("Abteilung fuer DATEV Lodas Export", employee['abteilung_datev_lodas'])
@@ -301,7 +303,6 @@ def map_employee_to_lodas(employee):
 
     # Map to export field
     fields_to_map['kst_abteilungs_nr'] = employee.get('abteilungscode', "")
-
 
     return fields_to_map
 
