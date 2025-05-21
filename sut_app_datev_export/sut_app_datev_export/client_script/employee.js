@@ -29,13 +29,21 @@ frappe.ui.form.on('Employee', {
 
 
             // Add button to navigate to the filtered list of Personalerfassungsbogen
-            frm.add_custom_button(__('View Personalerfassungsbogen'), function() {
+            frm.add_custom_button(__('Übersicht Personalerfassungsbogen'), function() {
                 frappe.set_route('List', 'Personalerfassungsbogen', {
                     'employee': frm.doc.name
                 });
             }, __('Aktionen'));
 
-            frm.add_custom_button(__('Create Personalerfassungsbogen'), function() {
+
+            frm.add_custom_button(__('Übersicht GEHALTSVERHANDLUNG'), function() {
+                frappe.set_route('List', 'GEHALTSVERHANDLUNG', {
+                    'zum_mitarbeiter': frm.doc.name
+                });
+            }, __('Aktionen'));
+
+
+            frm.add_custom_button(__('Neuer Personalerfassungsbogen'), function() {
                 frappe.new_doc('Personalerfassungsbogen', {
                     'employee': frm.doc.name,
                     'employee_name': frm.doc.employee_name // Assuming employee_name is the field name
