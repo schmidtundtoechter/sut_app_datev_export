@@ -140,8 +140,8 @@ def generate_record_description():
     # Record 15: u_lod_psd_a1_anvb (A1 certificate)
     description += "15;u_lod_psd_a1_anvb;pnr#psd;adresse_plz#psd;\n"
     
-    # Record 16: u_lod_psd_fehlzeiten (Absence times)
-    description += "16;u_lod_psd_fehlzeiten;pnr#psd;kind_nr#psd;\n"
+    # # Record 16: u_lod_psd_fehlzeiten (Absence times)
+    # description += "16;u_lod_psd_fehlzeiten;pnr#psd;kind_nr#psd;\n"
 
     description += "\n"
     return description
@@ -454,10 +454,10 @@ def generate_additional_records(employee):
         data += line
         
         # Record type 16: u_lod_psd_fehlzeiten (Absence times)
-        line = '16;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data.get("kind_nr", "")};\n'  # Child number for absence
-        data += line
+        # line = '16;'
+        # line += f'"{mapped_data["pnr"]}";'
+        # line += f'{mapped_data.get("kind_nr", "")};\n'  # Child number for absence
+        # data += line
         
     except Exception as e:
         frappe.log_error(f"Error in generate_additional_records: {str(e)}", "DATEV Export Error")
