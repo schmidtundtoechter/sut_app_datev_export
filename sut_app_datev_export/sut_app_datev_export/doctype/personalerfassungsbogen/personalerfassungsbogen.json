@@ -20,8 +20,6 @@
   "ausstellende_dienststelle",
   "ausweis_nr_aktenzeichen",
   "automatische_loeschung_nach_austritt_unterdruecken",
-  "basislohn",
-  "beginn_der_ausbildung",
   "bescheinigung_nach_313_sgb_iii_elektronisch_ueberm",
   "bic",
   "datum_des_todes",
@@ -58,7 +56,6 @@
   "urlaubsanspruch_aktuelles_jahr",
   "verheiratet",
   "versicherungsnummer",
-  "voraussichtliches_ende_der_ausbildung_gem_vertrag",
   "vorsatzwort_geburtsname",
   "vorsatzwort_mitarbeitername"
  ],
@@ -127,17 +124,6 @@
    "fieldtype": "Select",
    "label": "Automatische L\u00f6schung nach Austritt unterdr\u00fccken",
    "options": "\nNein\nJa"
-  },
-  {
-   "fieldname": "basislohn",
-   "fieldtype": "Float",
-   "label": "Basislohn",
-   "precision": "2"
-  },
-  {
-   "fieldname": "beginn_der_ausbildung",
-   "fieldtype": "Date",
-   "label": "Beginn der Ausbildung"
   },
   {
    "fieldname": "bescheinigung_nach_313_sgb_iii_elektronisch_ueberm",
@@ -301,13 +287,13 @@
   {
    "fieldname": "stundenlohn",
    "fieldtype": "Float",
-   "label": "Stundenlohn",
+   "label": "Stundenlohn 1",
    "precision": "2"
   },
   {
    "fieldname": "stundenlohn_1",
    "fieldtype": "Float",
-   "label": "Stundenlohn 1",
+   "label": "Stundenlohn 2",
    "precision": "2"
   },
   {
@@ -332,11 +318,6 @@
    "fieldtype": "Data",
    "label": "Versicherungsnummer",
    "length": 20
-  },
-  {
-   "fieldname": "voraussichtliches_ende_der_ausbildung_gem_vertrag",
-   "fieldtype": "Date",
-   "label": "Voraussichtliches Ende der Ausbildung gem. Vertrag"
   },
   {
    "fieldname": "vorsatzwort_geburtsname",
@@ -386,7 +367,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-28 15:51:47.487908",
+ "modified": "2025-06-09 13:23:11.072137",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "Personalerfassungsbogen",
