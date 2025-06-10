@@ -372,4 +372,3 @@ def validate_employee_data(employees_by_company):
         
         frappe.throw(_("Some employees have incomplete data:\n{0}\n\nSee error log for details.").format(user_message))
 
-        

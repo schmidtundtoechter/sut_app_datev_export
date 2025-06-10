@@ -143,6 +143,7 @@ def generate_record_description():
     # # Record 16: u_lod_psd_fehlzeiten (Absence times)
     # description += "16;u_lod_psd_fehlzeiten;pnr#psd;kind_nr#psd;\n"
 
+
     description += "\n"
     return description
 
@@ -458,6 +459,7 @@ def generate_additional_records(employee):
         # line += f'"{mapped_data["pnr"]}";'
         # line += f'{mapped_data.get("kind_nr", "")};\n'  # Child number for absence
         # data += line
+
         
     except Exception as e:
         frappe.log_error(f"Error in generate_additional_records: {str(e)}", "DATEV Export Error")
@@ -577,5 +579,6 @@ def generate_single_employee_file(employee, settings):
         'company': employee['company'],
         'employee_count': 1,
         'children_count': children_count
+
     }]
 
