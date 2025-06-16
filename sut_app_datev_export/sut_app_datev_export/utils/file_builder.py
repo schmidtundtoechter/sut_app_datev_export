@@ -130,7 +130,7 @@ def generate_record_description():
     description += "10;u_lod_psd_besonderheiten;pnr#psd;entlohnungsform#psd;\n"
     
     # Record 11: u_lod_psd_kindergeld (Children - keep current as shown in images)
-    description += "11;u_lod_psd_kindergeld;pnr#psd;kind_nr#psd;kind_vorname#psd;"
+    description += "11;u_lod_psd_kindergeld;pnr#psd;kind_vorname#psd;"
     description += "kind_nachname#psd;kind_geburtsdatum#psd;\n"
     
     # Record 12: u_lod_psd_festbezuege (Fixed salary - keep current as shown in images)
@@ -440,7 +440,7 @@ def generate_child_record(employee, child):
         # Record type 11: Child information
         fields = [
             format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
-            format_field(mapped_data["kind_nr"], False, False),  # Child number (no quotes)
+            # format_field(mapped_data["kind_nr"], False, False),  # Child number (no quotes)
             format_field(mapped_data["kind_vorname"], False, True),  # Child first name (quoted)
             format_field(mapped_data["kind_nachname"], False, True),  # Child last name (quoted)
             format_field(mapped_data["kind_geburtsdatum"], False, False)  # Child birth date (no quotes)
