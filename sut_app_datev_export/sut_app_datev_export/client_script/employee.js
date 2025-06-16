@@ -20,6 +20,9 @@ frappe.ui.form.on('Employee', {
                                     indicator: 'green',
                                     message: __('Employee exported successfully. Email sent to {0}', [r.message.email])
                                 });
+
+                               
+                                    
                             }
                         }
                     });
