@@ -428,7 +428,7 @@ def generate_child_record(employee, child):
     data = ""
     
     try:
-        # Check if this specific child has any meaningful data
+        # Check if this specific child has any meaningful data - update dont export kind number
         if not (child.get('kind_nummer') or 
                 child.get('vorname_personaldaten_kinderdaten_allgemeine_angaben') or 
                 child.get('familienname_personaldaten_kinderdaten_allgemeine_angaben') or 
