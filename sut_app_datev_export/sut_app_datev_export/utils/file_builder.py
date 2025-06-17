@@ -92,7 +92,7 @@ def generate_record_description():
     description += "adresse_plz#psd;adresse_strassenname#psd;schwerbeschaedigt#psd;"
     description += "staatsangehoerigkeit#psd;telefon#psd;familienstand#psd;"
     description += "duevo_namenszusatz#psd;duevo_vorsatzwort#psd;nazu_gebname#psd;"
-    description += "vorsatzwort_gebname#psd;datum_studienbesch#psd;loesch_nach_austr_unterdr#psd;eur_versnr#psd;sba_ausbildungsbeginn#psd;sba_ausbildungsende#psd;datum_tod#psd\n"
+    description += "vorsatzwort_gebname#psd;datum_studienbesch#psd;loesch_nach_austr_unterdr#psd;eur_versnr#psd;sba_ausbildungsbeginn#psd;sba_ausbildungsende#psd;datum_tod#psd;\n"
     
     # Record 2: u_lod_psd_taetigkeit (Job/Activity - FIXED: Added additional field for fixed value 1)
     description += "2;u_lod_psd_taetigkeit;pnr#psd;berufsbezeichnung#psd;beschaeft_nr#psd;kst_abteilungs_nr#psd;"
@@ -118,7 +118,7 @@ def generate_record_description():
     description += "sba_sb_ausweis_ab#psd;\n"
     
     # Record 7: u_lod_psd_arbeitszeit_regelm (Working time - following Excel mapping)
-    description += "7;u_lod_psd_arbeitszeit_regelm;pnr#psd;az_wtl_indiv#psd;url_tage_jhrl#psd\n"
+    description += "7;u_lod_psd_arbeitszeit_regelm;pnr#psd;az_wtl_indiv#psd;url_tage_jhrl#psd;\n"
     
     # Record 8: u_lod_psd_lohn_gehalt_bezuege (Salary - keep current as shown in images)
     description += "8;u_lod_psd_lohn_gehalt_bezuege;pnr#psd;std_lohn_2#psd;lfd_brutto_vereinbart#psd;\n"
@@ -134,12 +134,12 @@ def generate_record_description():
     description += "kind_nachname#psd;kind_geburtsdatum#psd;\n"
     
     # Record 12: u_lod_psd_festbezuege (Fixed salary - keep current as shown in images)
-    description += "12;u_lod_psd_festbezuege;pnr#psd;festbez_id#psd;lohnart_nummer#psd;betrag#psd;"
+    description += "12;u_lod_psd_festbezuege;pnr#psd;festbez_id#psd;lohnart_nr#psd;betrag#psd;"
     description += "intervall#psd;kuerzung#psd;\n"
     
     # Additional records following Excel mapping for missing fields
-    # Record 13: u_lod_psd_st_besond (Special tax)
-    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;sfn_std_lohn_1#psd;\n"
+    # Record 13: u_lod_psd_st_besond (Special tax) - rename
+    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;std_lohn_1#psd;\n"
     
     # Record 14: u_lod_mpd_arbeitszeit_sonst (Other working time)
     description += "14;u_lod_mpd_arbeitszeit_sonst;pnr#psd;urlaubsanspr_pro_jahr#mpd;\n"
