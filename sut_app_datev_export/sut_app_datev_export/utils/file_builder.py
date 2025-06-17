@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import now_datetime, format_datetime  # Add these imports for timezone handling
 import os
 import tempfile
 from datetime import datetime
@@ -6,7 +7,7 @@ from sut_app_datev_export.sut_app_datev_export.utils.employee_data import map_em
 from frappe import _
 
 def generate_lodas_files(employees_by_company, settings):
-    """Generate LODAS files for each company."""
+    """Generate LODAS files for each company - FIXED: Use correct timezone for filenames."""
     consultant_number = settings.consultant_number
     
     # Store file paths for later email attachment
@@ -32,8 +33,10 @@ def generate_lodas_files(employees_by_company, settings):
         content += generate_record_description()
         content += generate_employee_data(employees)
         
-        # Create temporary file
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        # Create temporary file with correct timezone timestamp
+        # FIXED: Use now_datetime() and format with correct timezone
+        current_time = now_datetime()
+        timestamp = format_datetime(current_time, "yyyyMMddHHmmss")
         filename = f"DATEV_LODAS_{company.replace(' ', '_')}_{timestamp}.txt"
         temp_path = os.path.join(tempfile.gettempdir(), filename)
         
@@ -55,7 +58,7 @@ def generate_lodas_files(employees_by_company, settings):
     return file_paths
 
 def generate_lodas_file_header(consultant_number, client_number):
-    """Generate the [Allgemein] section of the LODAS file."""
+    """Generate the [Allgemein] section of the LODAS file - FIXED: Use correct timezone."""
     header = "[Allgemein]\n"
     header += "Ziel=Lodas\n"
     header += "Version_SST=1.0\n"
@@ -66,8 +69,12 @@ def generate_lodas_file_header(consultant_number, client_number):
     header += "Datumsformat=TT.MM.JJJJ\n"
     header += "Stringbegrenzer=\"\"\n"
     header += "Kommentarzeichen=*\n"
-    header += f"StammdatenGueltigAb={datetime.now().strftime('%d.%m.%Y')}\n"
-    header += "BetrieblichePNrVerwenden=Ja\n\n"
+    
+    # FIXED: Use now_datetime() and format with correct timezone
+    current_time = now_datetime()
+    formatted_date = format_datetime(current_time, "dd.MM.yyyy")
+    header += f"StammdatenGueltigAb={formatted_date}\n"
+    header += "BetrieblichePNrVerwenden=Nein\n\n"
     
     return header
 
@@ -83,14 +90,14 @@ def generate_record_description():
     description += "email#psd;kz_erstbeschaeftigung#psd;ersteintrittsdatum#psd;"
     description += "verw_ersteintr_elena_bn#psd;adresse_strasse_nr#psd;adresse_ort#psd;"
     description += "adresse_plz#psd;adresse_strassenname#psd;schwerbeschaedigt#psd;"
-    description += "staatsangehoerigkeit#psd;telefon#psd;url_tage_jhrl#psd;familienstand#psd;"
+    description += "staatsangehoerigkeit#psd;telefon#psd;familienstand#psd;"
     description += "duevo_namenszusatz#psd;duevo_vorsatzwort#psd;nazu_gebname#psd;"
-    description += "vorsatzwort_gebname#psd;datum_studienbesch#psd;loesch_nach_austr_unterdr#psd;\n"
+    description += "vorsatzwort_gebname#psd;datum_studienbesch#psd;loesch_nach_austr_unterdr#psd;eur_versnr#psd;sba_ausbildungsbeginn#psd;sba_ausbildungsende#psd;datum_tod#psd\n"
     
-    # Record 2: u_lod_psd_taetigkeit (Job/Activity - following Excel mapping)  
-    description += "2;u_lod_psd_taetigkeit;pnr#psd;berufsbezeichnung#psd;kst_abteilungs_nr#psd;"
-    description += "schulabschluss#psd;ausbildungsabschluss#psd;sba_ausbildungsbeginn#psd;"
-    description += "sba_ausbildungsende#psd;datum_ben_ergeb_pruef#psd;ehrenamtliche_taetigkeit#psd;\n"
+    # Record 2: u_lod_psd_taetigkeit (Job/Activity - FIXED: Added additional field for fixed value 1)
+    description += "2;u_lod_psd_taetigkeit;pnr#psd;berufsbezeichnung#psd;beschaeft_nr#psd;kst_abteilungs_nr#psd;"
+    description += "schulabschluss#psd;ausbildungsabschluss#psd;ausbildungsbeginn#psd;vorr_ausbildungsende#psd;"
+    description += "datum_ben_ergeb_pruef#psd;ehrenamtliche_taetigkeit#psd;\n"
     
     # Record 3: u_lod_psd_beschaeftigung (Employment - following Excel mapping)
     description += "3;u_lod_psd_beschaeftigung;pnr#psd;arbeitsverhaeltnis#psd;eintrittdatum#psd;"
@@ -111,10 +118,10 @@ def generate_record_description():
     description += "sba_sb_ausweis_ab#psd;\n"
     
     # Record 7: u_lod_psd_arbeitszeit_regelm (Working time - following Excel mapping)
-    description += "7;u_lod_psd_arbeitszeit_regelm;pnr#psd;az_wtl_indiv#psd;urlaubsanspr_pro_jahr#psd;\n"
+    description += "7;u_lod_psd_arbeitszeit_regelm;pnr#psd;az_wtl_indiv#psd;url_tage_jhrl#psd\n"
     
     # Record 8: u_lod_psd_lohn_gehalt_bezuege (Salary - keep current as shown in images)
-    description += "8;u_lod_psd_lohn_gehalt_bezuege;pnr#psd;std_lohn_1#psd;lfd_brutto_vereinbart#psd;\n"
+    description += "8;u_lod_psd_lohn_gehalt_bezuege;pnr#psd;std_lohn_2#psd;lfd_brutto_vereinbart#psd;\n"
     
     # Record 9: u_lod_psd_fahrtkostenzuschuss (Travel subsidy - following Excel mapping)
     description += "9;u_lod_psd_fahrtkostenzuschuss;pnr#psd;jobticket#psd;\n"
@@ -123,28 +130,64 @@ def generate_record_description():
     description += "10;u_lod_psd_besonderheiten;pnr#psd;entlohnungsform#psd;\n"
     
     # Record 11: u_lod_psd_kindergeld (Children - keep current as shown in images)
-    description += "11;u_lod_psd_kindergeld;pnr#psd;kind_nr#psd;kind_vorname#psd;"
+    description += "11;u_lod_psd_kindergeld;pnr#psd;kind_vorname#psd;"
     description += "kind_nachname#psd;kind_geburtsdatum#psd;\n"
     
     # Record 12: u_lod_psd_festbezuege (Fixed salary - keep current as shown in images)
-    description += "12;u_lod_psd_festbezuege;pnr#psd;lohnart_nummer#psd;betrag#psd;"
-    description += "intervall#psd;kuerzung#psd;feld6#psd;feld7#psd;\n"
+    description += "12;u_lod_psd_festbezuege;pnr#psd;festbez_id#psd;lohnart_nr#psd;betrag#psd;"
+    description += "intervall#psd;kuerzung#psd;\n"
     
     # Additional records following Excel mapping for missing fields
     # Record 13: u_lod_psd_st_besond (Special tax)
-    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;sfn_std_lohn#psd;\n"
+    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;sfn_std_lohn_1#psd;\n"
     
     # Record 14: u_lod_mpd_arbeitszeit_sonst (Other working time)
     description += "14;u_lod_mpd_arbeitszeit_sonst;pnr#psd;urlaubsanspr_pro_jahr#mpd;\n"
     
     # Record 15: u_lod_psd_a1_anvb (A1 certificate)
     description += "15;u_lod_psd_a1_anvb;pnr#psd;adresse_plz#psd;\n"
-    
-    # # Record 16: u_lod_psd_fehlzeiten (Absence times)
-    # description += "16;u_lod_psd_fehlzeiten;pnr#psd;kind_nr#psd;\n"
 
     description += "\n"
     return description
+
+def format_numeric_value(value):
+    """Format numeric values to use comma instead of dot for decimal separator."""
+    if value is None or value == "" or str(value).lower() == "none":
+        return ""
+    
+    # Convert to string if not already
+    str_value = str(value)
+    
+    # If it's a number, format it properly
+    try:
+        # Try to convert to float to check if it's numeric
+        float_value = float(str_value)
+        # Format with 2 decimal places and replace dot with comma
+        formatted = f"{float_value:.2f}".replace('.', ',')
+        return formatted
+    except (ValueError, TypeError):
+        # If it's not a number, return empty
+        return ""
+
+def clean_value(value):
+    """Clean values - replace 'None' and empty strings with empty."""
+    if value is None or value == "" or str(value).lower() == "none":
+        return ""
+    return str(value)
+
+def format_field(value, is_numeric=False, needs_quotes=True):
+    """Format field values according to DATEV requirements."""
+    if is_numeric:
+        cleaned = format_numeric_value(value)
+    else:
+        cleaned = clean_value(value)
+    
+    if cleaned == "":
+        return ""  # Empty field, no quotes
+    elif needs_quotes:
+        return f'"{cleaned}"'
+    else:
+        return cleaned
 
 def generate_employee_data(employees):
     """Generate the [Stammdaten] section of the LODAS file."""
@@ -162,6 +205,8 @@ def generate_employee_data(employees):
     
     return data
 
+# UPDATED: Modify generate_complete_employee_records function
+
 def generate_complete_employee_records(employee):
     """Generate all records for an employee following Excel structure."""
     data = ""
@@ -170,15 +215,15 @@ def generate_complete_employee_records(employee):
         # Main employee records (records 1-10 + additional records)
         data += generate_main_employee_records(employee)
         
-        # Child records (record 11) - if any - keep current logic as shown in images
-        if 'children' in employee and employee['children']:
+        # Child records (record 11) - ONLY if child data exists
+        if has_child_data(employee):
             for child in employee['children']:
                 data += generate_child_record(employee, child)
         
-        # Fixed salary components (record 12) - keep current logic as shown in images
+        # Fixed salary components (record 12)
         data += generate_festbezuege_records(employee)
         
-        # Additional special records (13-16)
+        # Additional special records (13-15)
         data += generate_additional_records(employee)
         
     except Exception as e:
@@ -188,129 +233,182 @@ def generate_complete_employee_records(employee):
     
     return data
 
+
+def has_child_data(employee):
+    """Check if employee has any child data to export."""
+    if not employee.get('children'):
+        return False
+    
+    # Check if any child has meaningful data
+    for child in employee['children']:
+        if (child.get('kind_nummer') or 
+            child.get('vorname_personaldaten_kinderdaten_allgemeine_angaben') or 
+            child.get('familienname_personaldaten_kinderdaten_allgemeine_angaben') or 
+            child.get('geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben')):
+            return True
+    
+    return False
+
+def has_disability_data(employee):
+    """Check if employee has any disability data to export."""
+    mapped_data = map_employee_to_lodas(employee)
+    
+    # Check all disability-related fields
+    disability_fields = [
+        mapped_data.get("sba_sb_ausweis_bis", ""),
+        mapped_data.get("sba_unter_18_std_aa_kz", ""),
+        mapped_data.get("sba_kz_dienststelle", ""),
+        mapped_data.get("sba_az_geschaeftsstelle", ""),
+        mapped_data.get("sba_ort_dienstelle", ""),
+        mapped_data.get("sba_sb_ausweis_ab", "")
+    ]
+    
+    # Return True if any field has data
+    for field_value in disability_fields:
+        if field_value and str(field_value).strip():
+            return True
+    
+    return False
+
+
 def generate_main_employee_records(employee):
     """Generate records 1-10 following exact Excel field mapping."""
     data = ""
     mapped_data = map_employee_to_lodas(employee)
     
     try:
-        # Record type 1: Main employee data (following Excel mapping exactly)
-        line = '1;'
-        line += f'"{mapped_data["pnr"]}";' # Employee number
-        line += f'"{mapped_data["duevo_familienname"]}";'  # Last name
-        line += f'"{mapped_data["duevo_vorname"]}";'       # First name
-        line += f'{mapped_data["geschlecht"]};'            # Gender
-        line += f'{mapped_data["geburtsdatum_ttmmjj"]};'    # Birth date
-        line += f'{mapped_data["adresse_nation_kz"]};'      # Country (Excel mapping: adresse_nation_kz)
-        line += f'"{mapped_data["duevo_titel"]}";'          # Academic title
-        line += f'{mapped_data["kz_alleinerziehend"]};'     # Single parent
-        line += f'"{mapped_data["adresse_anschriftenzusatz"]}";'  # Address addition
-        line += f'{mapped_data["arbeitserlaubnis"]};'       # Work permit
-        line += f'{mapped_data["aufenthaltserlaubnis"]};'   # Residence permit
-        line += f'{mapped_data["geburtsland"]};'            # Birth country
-        line += f'"{mapped_data["gebname"]}";'              # Birth name
-        line += f'"{mapped_data["gebort"]}";'               # Birth place
-        line += f'"{mapped_data["email"]}";'                # Email
-        line += f'{mapped_data["kz_erstbeschaeftigung"]};'  # First employment
-        line += f'{mapped_data["ersteintrittsdatum"]};'     # First entry date
-        line += f'{mapped_data["verw_ersteintr_elena_bn"]};'  # Use first entry for AAG
-        line += f'"{mapped_data["adresse_strasse_nr"]}";'   # House number
-        line += f'"{mapped_data["adresse_ort"]}";'          # City
-        line += f'{mapped_data["adresse_plz"]};'            # Postal code
-        line += f'"{mapped_data["adresse_strassenname"]}";' # Street name
-        line += f'{mapped_data["schwerbeschaedigt"]};'      # Disability
-        line += f'{mapped_data["staatsangehoerigkeit"]};'   # Nationality
-        line += f'"{mapped_data["telefon"]}";'              # Phone
-        line += f'{mapped_data["url_tage_jhrl"]};'          # Vacation days yearly
-        line += f'{mapped_data["familienstand"]};'          # Marital status (keep current)
-        line += f'"{mapped_data["duevo_namenszusatz"]}";'   # Name addition
-        line += f'"{mapped_data["duevo_vorsatzwort"]}";'    # Prefix word
-        line += f'"{mapped_data["nazu_gebname"]}";'         # Birth name addition
-        line += f'"{mapped_data["vorsatzwort_gebname"]}";'  # Birth name prefix
-        line += f'{mapped_data["datum_studienbesch"]};'     # Study certificate date
-        line += f'{mapped_data["loesch_nach_austr_unterdr"]};\n'  # Suppress automatic deletion
-        data += line
+        # Record type 1: Main employee data
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["duevo_familienname"], False, True),  # Last name (quoted)
+            format_field(mapped_data["duevo_vorname"], False, True),  # First name (quoted)
+            format_field(mapped_data["geschlecht"], False, False),  # Gender (no quotes)
+            format_field(mapped_data["geburtsdatum_ttmmjj"], False, False),  # Birth date (no quotes)
+            format_field(mapped_data["adresse_nation_kz"], False, False),  # Country (no quotes)
+            format_field(mapped_data["duevo_titel"], False, True),  # Academic title (quoted)
+            format_field(mapped_data["kz_alleinerziehend"], False, False),  # Single parent (no quotes)
+            format_field(mapped_data["adresse_anschriftenzusatz"], False, True),  # Address addition (quoted)
+            format_field(mapped_data["arbeitserlaubnis"], False, False),  # Work permit (no quotes)
+            format_field(mapped_data["aufenthaltserlaubnis"], False, False),  # Residence permit (no quotes)
+            format_field(mapped_data["geburtsland"], False, False),  # Birth country (no quotes)
+            format_field(mapped_data["gebname"], False, True),  # Birth name (quoted)
+            format_field(mapped_data["gebort"], False, True),  # Birth place (quoted)
+            format_field(mapped_data["email"], False, True),  # Email (quoted)
+            format_field(mapped_data["kz_erstbeschaeftigung"], False, False),  # First employment (no quotes)
+            format_field(mapped_data["ersteintrittsdatum"], False, False),  # First entry date (no quotes)
+            format_field(mapped_data["verw_ersteintr_elena_bn"], False, False),  # Use first entry for AAG (no quotes)
+            format_field(mapped_data["adresse_strasse_nr"], False, True),  # House number (quoted)
+            format_field(mapped_data["adresse_ort"], False, True),  # City (quoted)
+            format_field(mapped_data["adresse_plz"], False, False),  # Postal code (no quotes)
+            format_field(mapped_data["adresse_strassenname"], False, True),  # Street name (quoted)
+            format_field(mapped_data["schwerbeschaedigt"], False, False),  # Disability (no quotes)
+            format_field(mapped_data["staatsangehoerigkeit"], False, False),  # Nationality (no quotes)
+            format_field(mapped_data["telefon"], False, True),  # Phone (quoted)
+            format_field(mapped_data["familienstand"], False, False),  # Marital status (no quotes)
+            format_field(mapped_data["duevo_namenszusatz"], False, True),  # Name addition (quoted)
+            format_field(mapped_data["duevo_vorsatzwort"], False, True),  # Prefix word (quoted)
+            format_field(mapped_data["nazu_gebname"], False, True),  # Birth name addition (quoted)
+            format_field(mapped_data["vorsatzwort_gebname"], False, True),  # Birth name prefix (quoted)
+            format_field(mapped_data["datum_studienbesch"], False, False),  # Study certificate date (no quotes)
+            format_field(mapped_data["loesch_nach_austr_unterdr"], False, False),  # Suppress automatic deletion (no quotes)
+            format_field(mapped_data["versicherungsnummer"], False, True),  # Insurance number (quoted)
+            format_field(mapped_data["sba_ausbildungsbeginn"], False, False),  # Training start (no quotes)
+            format_field(mapped_data["sba_ausbildungsende"], False, False),  # Training end (no quotes)
+            format_field(mapped_data["datum_des_todes"], False, False),  # Date of death (no quotes)
+        ]
+        data += f'1;{";".join(fields)};\n'
         
-        # Record type 2: Job/Activity (following Excel mapping)
-        line = '2;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'"{mapped_data["berufsbezeichnung"]}";'     # Job title
-        line += f'"{mapped_data["kst_abteilungs_nr"]}";'    # Department number
-        line += f'{mapped_data["schulabschluss"]};'         # School education
-        line += f'{mapped_data["ausbildungsabschluss"]};'   # Professional education
-        line += f'{mapped_data["sba_ausbildungsbeginn"]};'  # Training start
-        line += f'{mapped_data["sba_ausbildungsende"]};'    # Training end
-        line += f'{mapped_data["datum_ben_ergeb_pruef"]};'  # Actual training end
-        line += f'{mapped_data["ehrenamtliche_taetigkeit"]};\n'  # Voluntary work
-        data += line
+        # Record type 2: Job/Activity
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["berufsbezeichnung"], False, True),  # Job title (quoted)
+            format_field(mapped_data["kst_abteilungs_nr"], False, True),  # Department number (quoted)
+            "1",  # Fixed value 1 as required
+            format_field(mapped_data["schulabschluss"], False, False),  # School education (no quotes)
+            format_field(mapped_data["ausbildungsabschluss"], False, False),  # Professional education (no quotes)
+            format_field(mapped_data["beginn_der_ausbildung"], False, False),  # Training start (no quotes)
+            format_field(mapped_data["voraussichtliches_ende_der_ausbildung_gem_vertrag"], False, False),  # Expected training end (no quotes)
+            format_field(mapped_data["datum_ben_ergeb_pruef"], False, False),  # Actual training end (no quotes)
+            format_field(mapped_data["ehrenamtliche_taetigkeit"], False, False)  # Voluntary work (no quotes)
+        ]
+        data += f'2;{";".join(fields)};\n'
         
-        # Record type 3: Employment (following Excel mapping)
-        line = '3;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data["arbeitsverhaeltnis"]};'      # Employment type
-        line += f'{mapped_data["eintrittdatum"]};'          # Entry date
-        line += f'{mapped_data["austrittdatum"]};'          # Exit date
-        line += f'{mapped_data["kz_arbbes_nae_abrech_autom"]};'  # Work certificate
-        line += f'{mapped_data["eel_nach_austritt_kz"]};'   # EEL after exit
-        line += f'{mapped_data["ebz_nach_austritt_kz"]};'   # One-time payments after exit
-        line += f'{mapped_data["kz_besch_nebenbesch"]};\n'  # Certificate § 313
-        data += line
+        # Record type 3: Employment
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["arbeitsverhaeltnis"], False, False),  # Employment type (no quotes)
+            format_field(mapped_data["eintrittdatum"], False, False),  # Entry date (no quotes)
+            format_field(mapped_data["austrittdatum"], False, False),  # Exit date (no quotes)
+            format_field(mapped_data["kz_arbbes_nae_abrech_autom"], False, False),  # Work certificate (no quotes)
+            format_field(mapped_data["eel_nach_austritt_kz"], False, False),  # EEL after exit (no quotes)
+            format_field(mapped_data["ebz_nach_austritt_kz"], False, False),  # One-time payments after exit (no quotes)
+            format_field(mapped_data["kz_besch_nebenbesch"], False, False)  # Certificate § 313 (no quotes)
+        ]
+        data += f'3;{";".join(fields)};\n'
         
-        # Record type 4: Tax (following Excel mapping)
-        line = '4;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'"{mapped_data["identifikationsnummer"]}";'  # Tax ID
-        line += f'{mapped_data["st_klasse"]};'              # Tax class
-        line += f'{mapped_data["konf_an"]};'                # Religion
-        line += f'{mapped_data["kfb_anzahl"]};'             # Number of child allowances
-        line += f'{mapped_data["pausch_einhtl_2"]};'        # Flat tax
-        line += f'{mapped_data["els_2_haupt_ag_kz"]};\n'    # Main/secondary employer
-        data += line
+        # Record type 4: Tax
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["identifikationsnummer"], False, True),  # Tax ID (quoted)
+            format_field(mapped_data["st_klasse"], False, False),  # Tax class (no quotes)
+            format_field(mapped_data["konf_an"], False, False),  # Religion (no quotes)
+            format_field(mapped_data["kfb_anzahl"], True, False),  # Number of child allowances (numeric, no quotes)
+            format_field(mapped_data["pausch_einhtl_2"], False, False),  # Flat tax (no quotes)
+            format_field(mapped_data["els_2_haupt_ag_kz"], False, False)  # Main/secondary employer (no quotes)
+        ]
+        data += f'4;{";".join(fields)};\n'
         
-        # Record type 5: Bank (keep current as shown in images)
-        line = '5;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'"{mapped_data["ma_iban"]}";'
-        line += f'"{mapped_data["ma_bic"]}";'
-        line += f'"{mapped_data["ma_bank_kto_inhaber_abw"]}";\n'
-        data += line
+        # Record type 5: Bank
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["ma_iban"], False, True),  # IBAN (quoted)
+            format_field(mapped_data["ma_bic"], False, True),  # BIC (quoted)
+            format_field(mapped_data["ma_bank_kto_inhaber_abw"], False, True)  # Account holder (quoted)
+        ]
+        data += f'5;{";".join(fields)};\n'
         
-        # Record type 6: Disability (following Excel mapping)
-        line = '6;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data["sba_sb_ausweis_bis"]};'     # Disability ID valid until
-        line += f'{mapped_data["sba_unter_18_std_aa_kz"]};' # Under 18 hours with AA approval
-        line += f'"{mapped_data["sba_kz_dienststelle"]}";'  # Issuing authority
-        line += f'"{mapped_data["sba_az_geschaeftsstelle"]}";'  # ID number/file number
-        line += f'"{mapped_data["sba_ort_dienstelle"]}";'   # Authority location
-        line += f'{mapped_data["sba_sb_ausweis_ab"]};\n'    # Disability ID valid from
-        data += line
+        # Record type 6: Disability - ONLY if disability data exists
+        if has_disability_data(employee):
+            fields = [
+                format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+                format_field(mapped_data["sba_sb_ausweis_bis"], False, False),  # Disability ID valid until (no quotes)
+                format_field(mapped_data["sba_unter_18_std_aa_kz"], False, False),  # Under 18 hours with AA approval (no quotes)
+                format_field(mapped_data["sba_kz_dienststelle"], False, True),  # Issuing authority (quoted)
+                format_field(mapped_data["sba_az_geschaeftsstelle"], False, True),  # ID number/file number (quoted)
+                format_field(mapped_data["sba_ort_dienstelle"], False, True),  # Authority location (quoted)
+                format_field(mapped_data["sba_sb_ausweis_ab"], False, False)  # Disability ID valid from (no quotes)
+            ]
+            data += f'6;{";".join(fields)};\n'
         
-        # Record type 7: Working time (following Excel mapping)
-        line = '7;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data["az_wtl_indiv"]};'           # Weekly working hours
-        line += f'{mapped_data["urlaubsanspr_pro_jahr"]};\n'  # Basic vacation entitlement
-        data += line
+        # Record type 7: Working time
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["az_wtl_indiv"], True, False),  # Weekly working hours (numeric, no quotes)
+            format_field(mapped_data["url_tage_jhrl"], True, False),  # Vacation days yearly (numeric, no quotes)
+        ]
+        data += f'7;{";".join(fields)};\n'
         
-        # Record type 8: Salary (keep current as shown in images)
-        line = '8;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data["std_lohn_1"]};'             # Hourly wage 1
-        line += f'{mapped_data["lfd_brutto_vereinbart"]};\n'  # Current gross agreed
-        data += line
+        # Record type 8: Salary
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["std_lohn_1"], True, False),  # Hourly wage 1 (numeric, no quotes)
+            format_field(mapped_data["lfd_brutto_vereinbart"], True, False)  # Current gross agreed (numeric, no quotes)
+        ]
+        data += f'8;{";".join(fields)};\n'
         
-        # Record type 9: Travel subsidy (following Excel mapping)
-        line = '9;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data["jobticket"]};\n'            # Job ticket
-        data += line
+        # Record type 9: Travel subsidy
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["jobticket"], True, False)  # Job ticket (numeric, no quotes)
+        ]
+        data += f'9;{";".join(fields)};\n'
         
-        # Record type 10: Special features (following Excel mapping)
-        line = '10;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data["entlohnungsform"]};\n'      # Remuneration form
-        data += line
+        # Record type 10: Special features
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data["entlohnungsform"], False, False)  # Remuneration form (no quotes)
+        ]
+        data += f'10;{";".join(fields)};\n'
         
     except KeyError as e:
         frappe.log_error(f"Missing key in employee data: {str(e)} for employee {employee.get('name', 'Unknown')}", 
@@ -326,21 +424,29 @@ def generate_main_employee_records(employee):
     return data
 
 def generate_child_record(employee, child):
-    """Generate a child record (type 11) - keep current logic as shown in images."""
+    """Generate a child record (type 11) - only if child has data."""
     data = ""
     
     try:
+        # Check if this specific child has any meaningful data - update dont export kind number
+        if not (child.get('kind_nummer') or 
+                child.get('vorname_personaldaten_kinderdaten_allgemeine_angaben') or 
+                child.get('familienname_personaldaten_kinderdaten_allgemeine_angaben') or 
+                child.get('geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben')):
+            return ""  # Skip this child if no data
+        
         mapped_data = map_child_to_lodas(employee, child)
         
-        # Record type 11: Child information (keep current structure)
-        line = '11;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data["kind_nr"]};'                # Child number
-        line += f'"{mapped_data["kind_vorname"]}";'         # Child first name
-        line += f'"{mapped_data["kind_nachname"]}";'        # Child last name
-        line += f'{mapped_data["kind_geburtsdatum"]};\n'    # Child birth date
+        # Record type 11: Child information
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            # format_field(mapped_data["kind_nr"], False, False),  # Child number (no quotes)
+            format_field(mapped_data["kind_vorname"], False, True),  # Child first name (quoted)
+            format_field(mapped_data["kind_nachname"], False, True),  # Child last name (quoted)
+            format_field(mapped_data["kind_geburtsdatum"], False, False)  # Child birth date (no quotes)
+        ]
+        data += f'11;{";".join(fields)};\n'
         
-        data += line
     except Exception as e:
         frappe.log_error(f"Error generating child record for employee {employee.get('name', 'Unknown')}: {str(e)}", 
                        "DATEV Export Error")
@@ -350,76 +456,70 @@ def generate_child_record(employee, child):
     return data
 
 def generate_festbezuege_records(employee):
-    """Generate festbezuege records (type 12) - keep current logic as shown in images."""
+    """Generate festbezuege records (type 12) with festbez_id field."""
     data = ""
     mapped_data = map_employee_to_lodas(employee)
     
     try:
-        # Keep the existing 7 wage type records logic as shown in images
-        # 1. Grundgehalt (GG) - lohnart_nummer 1
+        # 1. Grundgehalt (GG) - festbez_id = 1
         basic_salary = determine_basic_salary(employee)
         lohnart_gg = employee.get('custom_lohnart_gg', "999")
         
-        # Always output record 1 (Grundgehalt)
-        line = '12;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{lohnart_gg};'  # Use the actual lohnart_nummer value or 999 default
+        amount = "0" if not basic_salary else basic_salary
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field("1", False, False),  # FIXED: festbez_id = 1 (no quotes)
+            format_field(lohnart_gg, False, False),  # Lohnart number (no quotes)
+            format_field(amount, True, False),  # Amount (numeric, no quotes)
+            format_field("0", False, False),  # Interval (no quotes)
+            format_field("0", False, False)  # Reduction (no quotes)
+        ]
+        data += f'12;{";".join(fields)};\n'
         
-        # Use actual amount if available, otherwise 0
-        amount = "0"
-        if basic_salary:
-            amount = basic_salary
-        
-        line += f'{amount};'  # Amount
-        line += f'0;'  # intervall (0 = monthly)
-        line += f'0;\n'  # kuerzung (0 = no reduction)
-        data += line
-        
-        # 2-5. Project salaries (P1-P4) - lohnart_nummer 2-5
+        # 2-5. Project salaries (P1-P4) - festbez_id = 2, 3, 4, 5
         for i in range(1, 5):
             field_name = f'custom_lohnart_p{i}'
             project_salary_field = f'custom_gehalt_projekt_{i}'
             
-            # Always get lohnart_nummer (default 999 if not available)
             lohnart_nummer = employee.get(field_name, "999")
-            
-            # Always output the festbezuege entry 
-            line = '12;'
-            line += f'"{mapped_data["pnr"]}";'
-            line += f'{lohnart_nummer};'  # Use the actual lohnart_nummer value
-            
-            # Use actual amount if available, otherwise 0
             amount = "0"
             if employee.get(project_salary_field) and str(employee.get(project_salary_field)).strip():
                 amount = employee.get(project_salary_field)
             
-            line += f'{amount};'  # Amount
-            line += f'0;'  # intervall (0 = monthly)
-            line += f'0;\n'  # kuerzung (0 = no reduction)
-            data += line
+            festbez_id = str(i + 1)  # FIXED: festbez_id = 2, 3, 4, 5
+            
+            fields = [
+                format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+                format_field(festbez_id, False, False),  # FIXED: festbez_id (no quotes)
+                format_field(lohnart_nummer, False, False),  # Lohnart number (no quotes)
+                format_field(amount, True, False),  # Amount (numeric, no quotes)
+                format_field("0", False, False),  # Interval (no quotes)
+                format_field("0", False, False)  # Reduction (no quotes)
+            ]
+            data += f'12;{";".join(fields)};\n'
         
-        # 6-7. Supplementary salaries (Z1-Z2) - lohnart_nummer 6-7
+        # 6-7. Supplementary salaries (Z1-Z2) - festbez_id = 6, 7
         for i in range(1, 3):
             field_name = f'custom_lohnart_z{i}'
             supplement_field = f'custom_zulage_zulage_{i}'
             
-            # Always get lohnart_nummer (default 998 if not available)
             lohnart_nummer = employee.get(field_name, "998")
-            
-            # Always output the festbezuege entry
-            line = '12;'
-            line += f'"{mapped_data["pnr"]}";'
-            line += f'{lohnart_nummer};'  # Use the actual lohnart_nummer value
-            
-            # Use actual amount if available, otherwise 0
             amount = "0"
             if employee.get(supplement_field) and str(employee.get(supplement_field)).strip():
                 amount = employee.get(supplement_field)
             
-            line += f'{amount};'  # Amount
-            line += f'0;'  # intervall (0 = monthly)
-            line += f'0;\n'  # kuerzung (0 = no reduction)
-            data += line
+            festbez_id = str(i + 5)  # FIXED: festbez_id = 6, 7
+            
+            fields = [
+                format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+                format_field(festbez_id, False, False),  # FIXED: festbez_id (no quotes)
+                format_field(lohnart_nummer, False, False),  # Lohnart number (no quotes)
+                format_field(amount, True, False),  # Amount (numeric, no quotes)
+                format_field("0", False, False),  # Interval (no quotes)
+                format_field("0", False, False)  # Reduction (no quotes)
+            ]
+            data += f'12;{";".join(fields)};\n'
+            
     except Exception as e:
         frappe.log_error(f"Error in generate_festbezuege_records for employee {employee.get('name', 'Unknown')}: {str(e)}", 
                       "DATEV Export Error")
@@ -429,35 +529,32 @@ def generate_festbezuege_records(employee):
     return data
 
 def generate_additional_records(employee):
-    """Generate additional records 13-16 following Excel mapping."""
+    """Generate additional records 13-15 following Excel mapping."""
     data = ""
     mapped_data = map_employee_to_lodas(employee)
     
     try:
         # Record type 13: u_lod_psd_st_besond (Special tax)
-        line = '13;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data.get("sfn_basislohn", "")};'  # Base salary (removed field)
-        line += f'{mapped_data.get("sfn_std_lohn", "")};\n'  # Standard hourly wage
-        data += line
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data.get("basislohn", ""), True, False),  # Base salary (numeric, no quotes)
+            format_field(mapped_data.get("sfn_std_lohn", ""), True, False)  # Standard hourly wage (numeric, no quotes)
+        ]
+        data += f'13;{";".join(fields)};\n'
         
         # Record type 14: u_lod_mpd_arbeitszeit_sonst (Other working time)
-        line = '14;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data.get("urlaubsanspr_pro_jahr_mpd", "")};\n'  # MPD working time
-        data += line
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data.get("urlaubsanspr_pro_jahr_mpd", ""), True, False)  # MPD working time (numeric, no quotes)
+        ]
+        data += f'14;{";".join(fields)};\n'
         
         # Record type 15: u_lod_psd_a1_anvb (A1 certificate)
-        line = '15;'
-        line += f'"{mapped_data["pnr"]}";'
-        line += f'{mapped_data.get("adresse_plz", "")};\n'  # Postal code for A1
-        data += line
-        
-        # Record type 16: u_lod_psd_fehlzeiten (Absence times)
-        # line = '16;'
-        # line += f'"{mapped_data["pnr"]}";'
-        # line += f'{mapped_data.get("kind_nr", "")};\n'  # Child number for absence
-        # data += line
+        fields = [
+            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data.get("adresse_plz", ""), False, False)  # Postal code (no quotes)
+        ]
+        data += f'15;{";".join(fields)};\n'
         
     except Exception as e:
         frappe.log_error(f"Error in generate_additional_records: {str(e)}", "DATEV Export Error")
@@ -509,7 +606,7 @@ def determine_basic_salary(employee):
         return None
 
 def generate_single_employee_file(employee, settings):
-    """Generate LODAS file for a single employee."""
+    """Generate LODAS file for a single employee - FIXED: Use correct timezone for filename."""
     consultant_number = settings.consultant_number
     
     # Get company to client number mapping
@@ -560,8 +657,10 @@ def generate_single_employee_file(employee, settings):
     content += generate_record_description()
     content += generate_employee_data([employee])
     
-    # Create temporary file
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    # Create temporary file with correct timezone timestamp
+    # FIXED: Use now_datetime() and format with correct timezone
+    current_time = now_datetime()
+    timestamp = format_datetime(current_time, "yyyyMMddHHmmss")
     filename = f"DATEV_LODAS_Single_{employee['name']}_{timestamp}.txt"
     temp_path = os.path.join(tempfile.gettempdir(), filename)
     
