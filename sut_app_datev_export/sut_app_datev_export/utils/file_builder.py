@@ -139,7 +139,7 @@ def generate_record_description():
     
     # Additional records following Excel mapping for missing fields
     # Record 13: u_lod_psd_st_besond (Special tax)
-    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;sfn_std_lohn_1#psd;\n"
+    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;std_lohn_1#psd;\n"
     
     # Record 14: u_lod_mpd_arbeitszeit_sonst (Other working time)
     description += "14;u_lod_mpd_arbeitszeit_sonst;pnr#psd;urlaubsanspr_pro_jahr#mpd;\n"
