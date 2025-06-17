@@ -138,7 +138,7 @@ def generate_record_description():
     description += "intervall#psd;kuerzung#psd;\n"
     
     # Additional records following Excel mapping for missing fields
-    # Record 13: u_lod_psd_st_besond (Special tax)
+    # Record 13: u_lod_psd_st_besond (Special tax) - rename
     description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;std_lohn_1#psd;\n"
     
     # Record 14: u_lod_mpd_arbeitszeit_sonst (Other working time)
