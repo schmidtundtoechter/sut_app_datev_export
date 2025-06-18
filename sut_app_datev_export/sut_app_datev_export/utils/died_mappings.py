@@ -492,13 +492,13 @@ def get_country_code_mapping():
 DIED_MAPPINGS = {
     # DIED 4003: Gender
     "gender": {
-        'Male': '0',
-        'Female': '1',
-        'Transgender': '2',
-        'Non-Conforming	': '2',
-        'Genderqueer': '2',
-        'Other': '2',
-        'Prefer not to say': '3',
+        'male': '0',
+        'female': '1',
+        'transgender': '2',
+        'non-conforming	': '2',
+        'genderqueer': '2',
+        'other': '2',
+        'prefer not to say': '3',
         '': ''  # Default value
     },
 
@@ -591,7 +591,7 @@ DIED_MAPPINGS = {
     "custom_arbeitsverhältnis": {
         'unbefristet': '0',
         'befristet': '1',
-        'zweckbefristet': '2',
+        'zwechbefristet': '2',
         '': ''  # Default value
     },
 
