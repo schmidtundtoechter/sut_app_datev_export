@@ -196,6 +196,7 @@ def map_employee_to_lodas(employee):
         'duevo_vorsatzwort': employee.get('vorsatzwort_mitarbeitername', ""),      # Prefix word
         'nazu_gebname': employee.get('namenszusatz_geburtsname', ""),              # Birth name addition
         'vorsatzwort_gebname': employee.get('vorsatzwort_geburtsname', ""),        # Birth name prefix
+        'versicherungsnummer': employee.get('versicherungsnummer', ""), 
         'datum_studienbesch': format_date(employee.get('studienbescheinigung')),   # Study certificate date
         'loesch_nach_austr_unterdr': map_value_to_died("automatische_loeschung_nach_austritt_unterdruecken", 
                                                       employee.get('automatische_loeschung_nach_austritt_unterdruecken')),  # Suppress automatic deletion
@@ -371,3 +372,4 @@ def validate_employee_data(employees_by_company):
             user_message += "\n..."
         
         frappe.throw(_("Some employees have incomplete data:\n{0}\n\nSee error log for details.").format(user_message))
+        

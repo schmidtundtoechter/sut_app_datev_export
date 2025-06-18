@@ -87,22 +87,22 @@ def generate_record_description():
     description += "geschlecht#psd;geburtsdatum_ttmmjj#psd;adresse_nation_kz#psd;duevo_titel#psd;"
     description += "kz_alleinerziehend#psd;adresse_anschriftenzusatz#psd;arbeitserlaubnis#psd;"
     description += "aufenthaltserlaubnis#psd;geburtsland#psd;gebname#psd;gebort#psd;"
-    description += "email#psd;kz_erstbeschaeftigung#psd;ersteintrittsdatum#psd;"
+    description += "email#psd;ersteintrittsdatum#psd;"
     description += "verw_ersteintr_elena_bn#psd;adresse_strasse_nr#psd;adresse_ort#psd;"
     description += "adresse_plz#psd;adresse_strassenname#psd;schwerbeschaedigt#psd;"
     description += "staatsangehoerigkeit#psd;telefon#psd;familienstand#psd;"
     description += "duevo_namenszusatz#psd;duevo_vorsatzwort#psd;nazu_gebname#psd;"
-    description += "vorsatzwort_gebname#psd;datum_studienbesch#psd;loesch_nach_austr_unterdr#psd;eur_versnr#psd;sba_ausbildungsbeginn#psd;sba_ausbildungsende#psd;datum_tod#psd;\n"
+    description += "vorsatzwort_gebname#psd;datum_studienbesch#psd;loesch_nach_austr_unterdr#psd;sozialversicherung_nr#psd;sba_ausbildungsbeginn#psd;sba_ausbildungsende#psd;ebz_nach_austritt_kz#psd;datum_tod#psd;\n"
     
     # Record 2: u_lod_psd_taetigkeit (Job/Activity - FIXED: Added additional field for fixed value 1)
     description += "2;u_lod_psd_taetigkeit;pnr#psd;berufsbezeichnung#psd;beschaeft_nr#psd;kst_abteilungs_nr#psd;"
     description += "schulabschluss#psd;ausbildungsabschluss#psd;ausbildungsbeginn#psd;vorr_ausbildungsende#psd;"
-    description += "datum_ben_ergeb_pruef#psd;ehrenamtliche_taetigkeit#psd;\n"
+    description += "datum_ben_ergeb_pruef#psd;ehrenamtliche_taetigkeit#psd;kz_erstbeschaeftigung#psd;kz_besch_nebenbesch#psd;\n"
     
     # Record 3: u_lod_psd_beschaeftigung (Employment - following Excel mapping)
     description += "3;u_lod_psd_beschaeftigung;pnr#psd;arbeitsverhaeltnis#psd;eintrittdatum#psd;"
-    description += "austrittdatum#psd;kz_arbbes_nae_abrech_autom#psd;eel_nach_austritt_kz#psd;"
-    description += "ebz_nach_austritt_kz#psd;kz_besch_nebenbesch#psd;\n"
+    description += "austrittdatum#psd;kz_arbbes_nae_abrech_autom#psd;eel_nach_austritt_kz#psd;\n"
+    
     
     # Record 4: u_lod_psd_steuer (Tax - following Excel mapping)
     description += "4;u_lod_psd_steuer;pnr#psd;identifikationsnummer#psd;st_klasse#psd;"
@@ -130,7 +130,7 @@ def generate_record_description():
     description += "10;u_lod_psd_besonderheiten;pnr#psd;entlohnungsform#psd;\n"
     
     # Record 11: u_lod_psd_kindergeld (Children - keep current as shown in images)
-    description += "11;u_lod_psd_kindergeld;pnr#psd;kind_vorname#psd;"
+    description += "11;u_lod_psd_kindergeld;pnr#psd;kind_nr#psd;kind_vorname#psd;"
     description += "kind_nachname#psd;kind_geburtsdatum#psd;\n"
     
     # Record 12: u_lod_psd_festbezuege (Fixed salary - keep current as shown in images)
@@ -294,7 +294,7 @@ def generate_main_employee_records(employee):
             format_field(mapped_data["gebname"], False, True),  # Birth name (quoted)
             format_field(mapped_data["gebort"], False, True),  # Birth place (quoted)
             format_field(mapped_data["email"], False, True),  # Email (quoted)
-            format_field(mapped_data["kz_erstbeschaeftigung"], False, False),  # First employment (no quotes)
+            
             format_field(mapped_data["ersteintrittsdatum"], False, False),  # First entry date (no quotes)
             format_field(mapped_data["verw_ersteintr_elena_bn"], False, False),  # Use first entry for AAG (no quotes)
             format_field(mapped_data["adresse_strasse_nr"], False, True),  # House number (quoted)
@@ -314,6 +314,7 @@ def generate_main_employee_records(employee):
             format_field(mapped_data["versicherungsnummer"], False, True),  # Insurance number (quoted)
             format_field(mapped_data["sba_ausbildungsbeginn"], False, False),  # Training start (no quotes)
             format_field(mapped_data["sba_ausbildungsende"], False, False),  # Training end (no quotes)
+            format_field(mapped_data["ebz_nach_austritt_kz"], False, False),  # One-time payments after exit (no quotes)
             format_field(mapped_data["datum_des_todes"], False, False),  # Date of death (no quotes)
         ]
         data += f'1;{";".join(fields)};\n'
@@ -329,7 +330,9 @@ def generate_main_employee_records(employee):
             format_field(mapped_data["beginn_der_ausbildung"], False, False),  # Training start (no quotes)
             format_field(mapped_data["voraussichtliches_ende_der_ausbildung_gem_vertrag"], False, False),  # Expected training end (no quotes)
             format_field(mapped_data["datum_ben_ergeb_pruef"], False, False),  # Actual training end (no quotes)
-            format_field(mapped_data["ehrenamtliche_taetigkeit"], False, False)  # Voluntary work (no quotes)
+            format_field(mapped_data["ehrenamtliche_taetigkeit"], False, False) , # Voluntary work (no quotes)
+            format_field(mapped_data["kz_erstbeschaeftigung"], False, False),  # First employment (no quotes)
+            format_field(mapped_data["kz_besch_nebenbesch"], False, False)  # Certificate § 313 (no quotes)
         ]
         data += f'2;{";".join(fields)};\n'
         
@@ -341,8 +344,8 @@ def generate_main_employee_records(employee):
             format_field(mapped_data["austrittdatum"], False, False),  # Exit date (no quotes)
             format_field(mapped_data["kz_arbbes_nae_abrech_autom"], False, False),  # Work certificate (no quotes)
             format_field(mapped_data["eel_nach_austritt_kz"], False, False),  # EEL after exit (no quotes)
-            format_field(mapped_data["ebz_nach_austritt_kz"], False, False),  # One-time payments after exit (no quotes)
-            format_field(mapped_data["kz_besch_nebenbesch"], False, False)  # Certificate § 313 (no quotes)
+            
+            
         ]
         data += f'3;{";".join(fields)};\n'
         
@@ -440,7 +443,7 @@ def generate_child_record(employee, child):
         # Record type 11: Child information
         fields = [
             format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
-            # format_field(mapped_data["kind_nr"], False, False),  # Child number (no quotes)
+            format_field(mapped_data["kind_nr"], False, False),  # Child number (no quotes)
             format_field(mapped_data["kind_vorname"], False, True),  # Child first name (quoted)
             format_field(mapped_data["kind_nachname"], False, True),  # Child last name (quoted)
             format_field(mapped_data["kind_geburtsdatum"], False, False)  # Child birth date (no quotes)
