@@ -82,7 +82,7 @@ def generate_record_description():
     """Generate the [Satzbeschreibung] section following exact Excel mapping."""
     description = "[Satzbeschreibung]\n"
     
-    # Record 1: u_lod_psd_mitarbeiter (Main employee data - following Excel mapping)
+    # Record 1: u_lod_psd_mitarbeiter (Main employee data - following Excel mapping) - small change
     description += "1;u_lod_psd_mitarbeiter;pnr#psd;duevo_familienname#psd;duevo_vorname#psd;"
     description += "geschlecht#psd;geburtsdatum_ttmmjj#psd;adresse_nation_kz#psd;duevo_titel#psd;"
     description += "kz_alleinerziehend#psd;adresse_anschriftenzusatz#psd;arbeitserlaubnis#psd;"

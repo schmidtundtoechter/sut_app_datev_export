@@ -88,7 +88,7 @@ def get_personalerfassungsbogen_data(employee_name):
         'steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten',
         'studienbescheinigung', 'stundenlohn', 'stundenlohn_1',
         'tatsaechliches_ende_der_ausbildung', 'urlaubsanspruch_aktuelles_jahr',
-        'verheiratet', 'versicherungsnummer',
+        'verheiratet', 'versicherungsnummer', 'beginn_der_ausbildung' , 'voraussichtliches_ende_der_ausbildung_gem_vertrag',
         'vorsatzwort_geburtsname', 'vorsatzwort_mitarbeitername'
     ]
     
@@ -198,6 +198,10 @@ def map_employee_to_lodas(employee):
         'vorsatzwort_gebname': employee.get('vorsatzwort_geburtsname', ""),        # Birth name prefix
         'versicherungsnummer': employee.get('versicherungsnummer', ""), 
         'datum_studienbesch': format_date(employee.get('studienbescheinigung')),   # Study certificate date
+        'datum_des_todes': format_date(employee.get('datum_des_todes')),   # Study certificate date
+        'beginn_der_ausbildung': format_date(employee.get('beginn_der_ausbildung')),  
+        'voraussichtliches_ende_der_ausbildung_gem_vertrag': format_date(employee.get('voraussichtliches_ende_der_ausbildung_gem_vertrag')),   
+
         'loesch_nach_austr_unterdr': map_value_to_died("automatische_loeschung_nach_austritt_unterdruecken", 
                                                       employee.get('automatische_loeschung_nach_austritt_unterdruecken')),  # Suppress automatic deletion
         
