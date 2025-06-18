@@ -89,7 +89,7 @@ def get_personalerfassungsbogen_data(employee_name):
         'studienbescheinigung', 'stundenlohn', 'stundenlohn_1',
         'tatsaechliches_ende_der_ausbildung', 'urlaubsanspruch_aktuelles_jahr',
         'verheiratet', 'versicherungsnummer',
-        'vorsatzwort_geburtsname', 'vorsatzwort_mitarbeitername' , 'beginn_der_ausbildung' ,'voraussichtliches_ende_der_ausbildung_gem_vertrag' ,  'basislohn'
+        'vorsatzwort_geburtsname', 'vorsatzwort_mitarbeitername'
     ]
     
     # Add wage fields if they exist in the database
@@ -196,17 +196,10 @@ def map_employee_to_lodas(employee):
         'duevo_vorsatzwort': employee.get('vorsatzwort_mitarbeitername', ""),      # Prefix word
         'nazu_gebname': employee.get('namenszusatz_geburtsname', ""),              # Birth name addition
         'vorsatzwort_gebname': employee.get('vorsatzwort_geburtsname', ""),        # Birth name prefix
+        'versicherungsnummer': employee.get('versicherungsnummer', ""), 
         'datum_studienbesch': format_date(employee.get('studienbescheinigung')),   # Study certificate date
         'loesch_nach_austr_unterdr': map_value_to_died("automatische_loeschung_nach_austritt_unterdruecken", 
                                                       employee.get('automatische_loeschung_nach_austritt_unterdruecken')),  # Suppress automatic deletion
-        'datum_des_todes': format_date(employee.get('datum_des_todes', "")),
-        'versicherungsnummer': employee.get('versicherungsnummer', ""),
-        'beginn_der_ausbildung': format_date(employee.get('beginn_der_ausbildung', "")),
-        'voraussichtliches_ende_der_ausbildung_gem_vertrag': format_date(employee.get('voraussichtliches_ende_der_ausbildung_gem_vertrag', "")),
-
-        'basislohn': employee.get('basislohn', ""),
-
-
         
         # Job/Activity information - following Excel mapping
         'berufsbezeichnung': employee.get('designation', ""),                      # Job title  
@@ -242,10 +235,9 @@ def map_employee_to_lodas(employee):
         'els_2_haupt_ag_kz': map_value_to_died("kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber", 
                                               employee.get('kennzeichnung_arbeitgeber_haupt_nebenarbeitgeber')),  # Main/secondary employer
         
-        # Bank details - keep current as shown in images 
+        # Bank details - keep current as shown in images
         'ma_iban': employee.get('iban', ""),
         'ma_bic': employee.get('bic', ""),
-
         'ma_bank_kto_inhaber_abw': employee.get('abweichender_kontoinhaber', ""),
         
         # Disability information - following Excel mapping
@@ -380,4 +372,4 @@ def validate_employee_data(employees_by_company):
             user_message += "\n..."
         
         frappe.throw(_("Some employees have incomplete data:\n{0}\n\nSee error log for details.").format(user_message))
-
+        

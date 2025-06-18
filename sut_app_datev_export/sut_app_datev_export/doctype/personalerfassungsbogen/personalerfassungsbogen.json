@@ -319,7 +319,7 @@
   {
    "fieldname": "versicherungsnummer",
    "fieldtype": "Data",
-   "label": "Versicherungsnummer",
+   "label": "Sozialversicherungsnummer",
    "length": 20
   },
   {
@@ -386,7 +386,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-13 15:39:23.719202",
+ "modified": "2025-06-18 10:13:15.421995",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "Personalerfassungsbogen",
