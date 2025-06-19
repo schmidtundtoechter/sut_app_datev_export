@@ -40,7 +40,7 @@ def generate_lodas_files(employees_by_company, settings):
         filename = f"DATEV_LODAS_{company.replace(' ', '_')}_{timestamp}.txt"
         temp_path = os.path.join(tempfile.gettempdir(), filename)
         
-        with open(temp_path, 'w', encoding='utf-8') as f:
+        with open(temp_path, 'w', encoding='cp1252', newline='\r\n') as f:
             f.write(content)
         
         # Count total employees including those with child records
@@ -667,7 +667,7 @@ def generate_single_employee_file(employee, settings):
     filename = f"DATEV_LODAS_Single_{employee['name']}_{timestamp}.txt"
     temp_path = os.path.join(tempfile.gettempdir(), filename)
     
-    with open(temp_path, 'w', encoding='utf-8') as f:
+    with open(temp_path, 'w', encoding='cp1252', newline='\r\n') as f:
         f.write(content)
     
     # Count children
