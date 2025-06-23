@@ -92,7 +92,7 @@
    "fieldname": "anzahl_kinderfreibetr\u00e4ge",
    "fieldtype": "Float",
    "label": "Anzahl Kinderfreibetr\u00e4ge",
-   "precision": "1"
+   "precision": "2"
   },
   {
    "fieldname": "arbeits_ausbildungsbeginn_tt_mm_jjjj",
@@ -213,7 +213,7 @@
    "fieldname": "grundurlaubsanspruch",
    "fieldtype": "Float",
    "label": "Grundurlaubsanspruch",
-   "precision": "1"
+   "precision": "2"
   },
   {
    "fieldname": "iban",
@@ -317,7 +317,7 @@
    "fieldname": "urlaubsanspruch_aktuelles_jahr",
    "fieldtype": "Float",
    "label": "Urlaubsanspruch aktuelles Jahr",
-   "precision": "1"
+   "precision": "2"
   },
   {
    "fieldname": "verheiratet",
@@ -424,7 +424,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-21 14:50:57.554369",
+ "modified": "2025-06-23 11:04:10.886607",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "Personalerfassungsbogen",
