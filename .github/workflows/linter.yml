@@ -1,5 +1,5 @@
 
-name: Linters
+name: Linters - sut_app_datev_export
 
 on:
   pull_request:
