@@ -492,13 +492,10 @@ def get_country_code_mapping():
 DIED_MAPPINGS = {
     # DIED 4003: Gender
     "gender": {
-        'male': '0',
-        'female': '1',
-        'transgender': '2',
-        'non-conforming	': '2',
-        'genderqueer': '2',
-        'other': '2',
-        'prefer not to say': '3',
+        'Männlich': '0',
+        'Weiblich': '1',
+        'Divers': '2',
+        'Unbestimmt': '3',
         '': ''  # Default value
     },
 
@@ -591,7 +588,7 @@ DIED_MAPPINGS = {
     "custom_arbeitsverhältnis": {
         'unbefristet': '0',
         'befristet': '1',
-        'zwechbefristet': '2',
+        'zweckbefristet': '2',
         '': ''  # Default value
     },
 
@@ -638,9 +635,9 @@ DIED_MAPPINGS = {
     # DIED 4640: Disability status
     "custom_schwerbehinderung": {
         'nein': '0',
-        '2 prozent': '1',
-        '20 prozent': '2',
-        '': ''  # Default value
+        'ja': '1',
+        '': '',
+        
     },
 
     # DIED 4214: Birth country - using same mapping as geburtsland in Personalerfassungsbogen
@@ -731,19 +728,28 @@ def map_value_to_died(field_name, value):
     # Check if field has a mapping
     if field_name in DIED_MAPPINGS:
         mapping = DIED_MAPPINGS[field_name]
-
-        # Try to get mapped value using lowercase for case-insensitive matching
-        result = mapping.get(value_lower, "")
-
-        # If no mapping found, log an error and use default
+        
+        # Case-insensitive lookup through the dictionary
+        result = ""
+        
+        # First try to find an exact match (case-insensitive)
+        for key, mapped_value in mapping.items():
+            if key.lower() == value_lower:
+                result = mapped_value
+                break
+        
+        # If no mapping found and value is not empty, try to get default
         if not result and value_lower:
-            frappe.log_error(
-                f"Value '{value}' for field '{field_name}' has no DIED mapping",
-                "DATEV Export Error"
-            )
-            result = mapping.get('', "")  # Get default value
+            # Look for empty string key as default
+            result = mapping.get('', "")
+            # If no default found, use original value
             if not result:
-                result = value  # If no default, use original value
+                result = value
+        
+        # If value was empty, get the default (empty string mapping)
+        if not result and not value_lower:
+            result = mapping.get('', "")
+            
     else:
         # For fields without specific mappings, return the original value
         result = value

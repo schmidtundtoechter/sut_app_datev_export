@@ -235,5 +235,7 @@ def reset_export_flags(employees):
     """Reset export flags for all exported employees."""
     for employee in employees:
         frappe.db.set_value('Employee', employee.name, 'custom_for_next_export', 0, update_modified=False)
+        frappe.db.set_value('Employee', employee.name, 'custom_bereits_exportiert', 1, update_modified=False)
+
 
     frappe.db.commit()

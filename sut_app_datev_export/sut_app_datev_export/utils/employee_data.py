@@ -10,7 +10,7 @@ def get_employees_for_export():
     # Get all employees marked for export with their fields
     employees = frappe.get_all(
         'Employee',
-        filters={'custom_for_next_export': 1},
+        filters={'custom_for_next_export': 1 , 'custom_bereits_exportiert' : 0},
         fields=[
             # Standard fields always needed
             'name', 'company', 'employee_name', 'designation',
