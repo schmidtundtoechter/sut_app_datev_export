@@ -118,10 +118,10 @@ def generate_record_description():
     description += "sba_sb_ausweis_ab#psd;\n"
     
     # Record 7: u_lod_psd_arbeitszeit_regelm (Working time - following Excel mapping)
-    description += "7;u_lod_psd_arbeitszeit_regelm;pnr#psd;az_wtl_indiv#psd;url_tage_jhrl#psd;\n"
+    description += "7;u_lod_psd_arbeitszeit_regelm;pnr#psd;az_wtl_indiv#psd;url_tage_jhrl#psd;urlaubsanspr_pro_jahr#psd;\n"
     
     # Record 8: u_lod_psd_lohn_gehalt_bezuege (Salary - keep current as shown in images)
-    description += "8;u_lod_psd_lohn_gehalt_bezuege;pnr#psd;std_lohn_2#psd;lfd_brutto_vereinbart#psd;\n"
+    description += "8;u_lod_psd_lohn_gehalt_bezuege;pnr#psd;std_lohn_1#psd;std_lohn_2#psd;lfd_brutto_vereinbart#psd;\n"
     
     # Record 9: u_lod_psd_fahrtkostenzuschuss (Travel subsidy - following Excel mapping)
     description += "9;u_lod_psd_fahrtkostenzuschuss;pnr#psd;jobticket#psd;\n"
@@ -139,13 +139,9 @@ def generate_record_description():
     
     # Additional records following Excel mapping for missing fields
     # Record 13: u_lod_psd_st_besond (Special tax) - rename
-    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;std_lohn_1#psd;\n"
+    description += "13;u_lod_psd_st_besond;pnr#psd;sfn_basislohn#psd;\n"
     
-    # Record 14: u_lod_mpd_arbeitszeit_sonst (Other working time)
-    description += "14;u_lod_mpd_arbeitszeit_sonst;pnr#psd;urlaubsanspr_pro_jahr#mpd;\n"
     
-    # Record 15: u_lod_psd_a1_anvb (A1 certificate)
-    description += "15;u_lod_psd_a1_anvb;pnr#psd;adresse_plz#psd;\n"
 
     description += "\n"
     return description
@@ -388,12 +384,14 @@ def generate_main_employee_records(employee):
             format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
             format_field(mapped_data["az_wtl_indiv"], True, False),  # Weekly working hours (numeric, no quotes)
             format_field(mapped_data["url_tage_jhrl"], True, False),  # Vacation days yearly (numeric, no quotes)
+            format_field(mapped_data.get("urlaubsanspr_pro_jahr_mpd", ""), True, False)  # MPD working time (numeric, no quotes)
         ]
         data += f'7;{";".join(fields)};\n'
         
         # Record type 8: Salary
         fields = [
             format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
+            format_field(mapped_data.get("sfn_std_lohn", ""), True, False) , # Standard hourly wage (numeric, no quotes)
             format_field(mapped_data["std_lohn_1"], True, False),  # Hourly wage 1 (numeric, no quotes)
             format_field(mapped_data["lfd_brutto_vereinbart"], True, False)  # Current gross agreed (numeric, no quotes)
         ]
@@ -541,23 +539,11 @@ def generate_additional_records(employee):
         fields = [
             format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
             format_field(mapped_data.get("basislohn", ""), True, False),  # Base salary (numeric, no quotes)
-            format_field(mapped_data.get("sfn_std_lohn", ""), True, False)  # Standard hourly wage (numeric, no quotes)
+            
         ]
         data += f'13;{";".join(fields)};\n'
         
-        # Record type 14: u_lod_mpd_arbeitszeit_sonst (Other working time)
-        fields = [
-            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
-            format_field(mapped_data.get("urlaubsanspr_pro_jahr_mpd", ""), True, False)  # MPD working time (numeric, no quotes)
-        ]
-        data += f'14;{";".join(fields)};\n'
         
-        # Record type 15: u_lod_psd_a1_anvb (A1 certificate)
-        fields = [
-            format_field(mapped_data["pnr"], False, True),  # Employee number (quoted)
-            format_field(mapped_data.get("adresse_plz", ""), False, False)  # Postal code (no quotes)
-        ]
-        data += f'15;{";".join(fields)};\n'
         
     except Exception as e:
         frappe.log_error(f"Error in generate_additional_records: {str(e)}", "DATEV Export Error")
@@ -672,7 +658,12 @@ def generate_single_employee_file(employee, settings):
     
     # Count children
     children_count = len(employee.get('children', []))
-    
+
+    get_doc = frappe.get_doc('Employee' , employee['name'])
+    get_doc.db_set('custom_for_next_export', 0 , update_modified=False)
+    get_doc.db_set('custom_bereits_exportiert', 1 , update_modified=False)
+
+    # frappe.db.commit()
     return [{
         'path': temp_path,
         'filename': filename,
