@@ -645,7 +645,7 @@ DIED_MAPPINGS = {
 
     # DIED 4213: Nationality (country codes)
     "custom_land": get_country_code_mapping(),
-    "staatsangehoerigkeit": get_country_code_mapping(),
+    "staatsangehoerigkeit": get_birth_country_mapping(),
 
     # DIED 1566: Tax class
     "steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten": {
