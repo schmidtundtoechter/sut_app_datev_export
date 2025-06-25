@@ -10,7 +10,7 @@ def get_employees_for_export():
     # Get all employees marked for export with their fields
     employees = frappe.get_all(
         'Employee',
-        filters={'custom_for_next_export': 1},
+        filters={'custom_for_next_export': 1 },
         fields=[
             # Standard fields always needed
             'name', 'company', 'employee_name', 'designation',
@@ -88,7 +88,7 @@ def get_personalerfassungsbogen_data(employee_name):
         'steuerklasse_personaldaten_steuer_steuerkarte_allgemeine_daten',
         'studienbescheinigung', 'stundenlohn', 'stundenlohn_1',
         'tatsaechliches_ende_der_ausbildung', 'urlaubsanspruch_aktuelles_jahr',
-        'verheiratet', 'versicherungsnummer',
+        'verheiratet', 'versicherungsnummer', 'beginn_der_ausbildung' , 'voraussichtliches_ende_der_ausbildung_gem_vertrag',
         'vorsatzwort_geburtsname', 'vorsatzwort_mitarbeitername'
     ]
     
@@ -196,7 +196,12 @@ def map_employee_to_lodas(employee):
         'duevo_vorsatzwort': employee.get('vorsatzwort_mitarbeitername', ""),      # Prefix word
         'nazu_gebname': employee.get('namenszusatz_geburtsname', ""),              # Birth name addition
         'vorsatzwort_gebname': employee.get('vorsatzwort_geburtsname', ""),        # Birth name prefix
+        'sozialversicherung_nr': employee.get('versicherungsnummer', ""), 
         'datum_studienbesch': format_date(employee.get('studienbescheinigung')),   # Study certificate date
+        'datum_tod': format_date(employee.get('datum_des_todes')),   # Study certificate date
+        'ausbildungsbeginn': format_date(employee.get('beginn_der_ausbildung')),  
+        'vorr_ausbildungsende': format_date(employee.get('voraussichtliches_ende_der_ausbildung_gem_vertrag')),   
+
         'loesch_nach_austr_unterdr': map_value_to_died("automatische_loeschung_nach_austritt_unterdruecken", 
                                                       employee.get('automatische_loeschung_nach_austritt_unterdruecken')),  # Suppress automatic deletion
         
@@ -250,11 +255,10 @@ def map_employee_to_lodas(employee):
         
         # Working time information - following Excel mapping
         'az_wtl_indiv': employee.get('custom_summe_wochenarbeitszeit', ""),       # Weekly working hours
-        'urlaubsanspr_pro_jahr': employee.get('grundurlaubsanspruch', ""),        # Basic vacation entitlement
-        'urlaubsanspr_pro_jahr_mpd': employee.get('grundurlaubsanspruch', ""),    # MPD vacation entitlement
+        'urlaubsanspr_pro_jahr': employee.get('grundurlaubsanspruch', ""),        
         
         # Salary information - keep current as shown in images
-        'std_lohn_1': employee.get('stundenlohn_1', ""),                            # Hourly wage 1 (keep current field name)
+        'std_lohn_2': employee.get('stundenlohn_1', ""),                            # Hourly wage 1 (keep current field name)
         'lfd_brutto_vereinbart': employee.get('custom_summe_gehalt', ""),         # Current gross agreed
         
         # Travel subsidy - following Excel mapping
@@ -264,8 +268,8 @@ def map_employee_to_lodas(employee):
         'entlohnungsform': map_value_to_died("entlohnungsform", employee.get('entlohnungsform')),  # Remuneration form
         
         # Additional fields for special records
-        'sfn_basislohn': "",  # Removed field - keep empty
-        'sfn_std_lohn': employee.get('stundenlohn', ""),  # Standard hourly wage
+        # 'sfn_basislohn': "",  # Removed field - keep empty
+        'std_lohn_1': employee.get('stundenlohn', ""),  # Standard hourly wage
         
         # Default empty values for child information - keep current as shown in images
         'kind_nr': "",
@@ -371,5 +375,4 @@ def validate_employee_data(employees_by_company):
             user_message += "\n..."
         
         frappe.throw(_("Some employees have incomplete data:\n{0}\n\nSee error log for details.").format(user_message))
-
         

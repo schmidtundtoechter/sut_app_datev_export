@@ -8,7 +8,8 @@
   "export_email",
   "consultant_number",
   "company_client_mapping",
-  "export_history"
+  "export_history",
+  "mehrfach_export_unterdruecken"
  ],
  "fields": [
   {
@@ -35,13 +36,19 @@
    "fieldtype": "Table",
    "label": "Letztes Exportdatum",
    "options": "DATEV Export History"
+  },
+  {
+   "fieldname": "mehrfach_export_unterdruecken",
+   "fieldtype": "Table",
+   "label": "Mehrfach Export unterdruecken",
+   "options": "Mehrfach Export unterdruecken"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-03-23 11:52:54.179583",
+ "modified": "2025-06-24 12:16:27.067902",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "DATEV Export SUT Settings",

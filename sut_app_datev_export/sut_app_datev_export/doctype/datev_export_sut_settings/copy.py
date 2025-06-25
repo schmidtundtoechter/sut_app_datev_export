@@ -1,16 +1,12 @@
-# Copyright (c) 2025, ahmad900mohammad@gmail.com and contributors
-# For license information, please see license.txt
+# UPDATED: Add timezone imports at the top of datev_export_sut_settings.py
 from frappe.model.document import Document
-# Copyright (c) 2025, ahmad900mohammad@gmail.com and contributors
-# For license information, please see license.txt
-# Copyright (c) 2025, ahmad900mohammad@gmail.com and contributors
-# For license information, please see license.txt
 
 import frappe
 import tempfile
 import os
 from frappe import _
 from datetime import datetime
+from frappe.utils import now_datetime, get_datetime  # Add these imports for timezone handling
 from sut_app_datev_export.sut_app_datev_export.utils.employee_data import get_employees_for_export, validate_employee_data, map_employee_to_lodas
 from sut_app_datev_export.sut_app_datev_export.utils.file_builder import (
     generate_lodas_files,
@@ -81,7 +77,6 @@ def export_employees():
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "DATEV Export Error")
         frappe.throw(_("Export failed: {0}").format(str(e)))
-
 
 @frappe.whitelist()
 def export_single_employee(employee):
@@ -221,12 +216,15 @@ def validate_company_mapping(settings, employees_by_company):
         ).format(", ".join(unmapped)))
 
 def record_export_history(settings, file_paths):
-    """Record export in history table."""
+    """Record export in history table - FIXED: Use correct timezone."""
     total_employees = sum(f.get('employee_count', 0) for f in file_paths)
     total_children = sum(f.get('children_count', 0) for f in file_paths)
 
+    # FIXED: Use now_datetime() which respects Frappe's timezone settings
+    current_time = now_datetime()
+
     settings.append('export_history', {
-        'export_date': datetime.now(),
+        'export_date': current_time,  # FIXED: Use timezone-aware datetime
         'employee_count': total_employees,
         'status': 'Success',
         'message': f"Exported {total_employees} employees and {total_children} children from {len(file_paths)} companies"
@@ -237,5 +235,7 @@ def reset_export_flags(employees):
     """Reset export flags for all exported employees."""
     for employee in employees:
         frappe.db.set_value('Employee', employee.name, 'custom_for_next_export', 0, update_modified=False)
+        # frappe.db.set_value('Employee', employee.name, 'custom_bereits_exportiert', 1, update_modified=False)
+
 
     frappe.db.commit()
