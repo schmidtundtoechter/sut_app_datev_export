@@ -50,7 +50,10 @@ def export_employees():
         # Validate employee data
         validate_employee_data(employees_by_company)
 
-        # Generate LODAS files
+        # NEW: Apply export restrictions and handle special field logic
+        process_export_restrictions(employees_by_company, settings)
+
+        # Generate LODAS files (now with settings parameter for dynamic restrictions)
         file_paths = generate_lodas_files(employees_by_company, settings)
 
         # Send email with attachments
@@ -59,6 +62,9 @@ def export_employees():
 
             # Record export in history
             record_export_history(settings, file_paths)
+
+            # NEW: Update stored values after successful export
+            update_employee_stored_values([emp for emps in employees_by_company.values() for emp in emps])
 
             # Reset export flags
             reset_export_flags([emp for emps in employees_by_company.values() for emp in emps])
@@ -75,7 +81,7 @@ def export_employees():
             frappe.throw(_("No files were generated. Check error logs."))
 
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "DATEV Export Error")
+        # frappe.log_error(frappe.get_traceback(), "DATEV Export Error")
         frappe.throw(_("Export failed: {0}").format(str(e)))
 
 @frappe.whitelist()
@@ -99,7 +105,10 @@ def export_single_employee(employee):
         # Validate employee data
         validate_employee_data(employees_by_company)
 
-        # Generate LODAS file for this employee
+        # NEW: Apply export restrictions and handle special field logic for single employee too
+        process_export_restrictions(employees_by_company, settings)
+
+        # Generate LODAS file for this employee (now with settings parameter for dynamic restrictions)
         file_paths = generate_single_employee_file(employee_dict, settings)
 
         # Send email with attachments
@@ -108,6 +117,9 @@ def export_single_employee(employee):
 
             # Record export in history
             record_export_history(settings, file_paths)
+
+            # NEW: Update stored values after successful single employee export
+            update_employee_stored_values([employee_dict])
 
             frappe.db.set_value("Employee", employee, "custom_for_next_export", 0, update_modified=False)
             frappe.db.commit()
@@ -122,80 +134,190 @@ def export_single_employee(employee):
             frappe.throw(_("No files were generated. Check error logs."))
 
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "DATEV Export Error")
+        # frappe.log_error(frappe.get_traceback(), "DATEV Export Error")
         frappe.throw(_("Export failed: {0}").format(str(e)))
 
-def prepare_employee_dict(employee_id):
-    """Prepare a dictionary with employee data from DocType."""
+# NEW FUNCTIONS FOR DYNAMIC EXPORT RESTRICTIONS
+def process_export_restrictions(employees_by_company, settings):
+    """Process export restrictions and special field logic for all employees."""
     try:
-        # Fetch employee document
-        employee_doc = frappe.get_doc("Employee", employee_id)
+        # Get export restrictions from child table
+        export_restrictions = get_export_restrictions(settings)
+        
+        # Debug: Log what we found
+        # frappe.log_error(f"Processing export restrictions: {export_restrictions}", "DATEV Export Debug")
+        
+        for company, employees in employees_by_company.items():
+            for employee in employees:
+                # Apply export restrictions
+                apply_export_restrictions(employee, export_restrictions)
+                
+                # Handle special field logic for az_wtl_indiv
+                handle_special_field_logic(employee)
+                
+    except Exception as e:
+        # frappe.log_error(f"Error in process_export_restrictions: {str(e)}", "DATEV Export Error")
+        raise
 
-        # Convert to a dictionary - handle both Doc objects and dictionaries
-        if hasattr(employee_doc, 'as_dict'):
-            employee_dict = employee_doc.as_dict()
+def get_export_restrictions(settings):
+    """Get export restrictions from the child table."""
+    restrictions = {}
+    try:
+        if hasattr(settings, 'mehrfach_export_unterdruecken'):
+            for restriction in settings.mehrfach_export_unterdruecken:
+                restrictions[restriction.field_name] = restriction.no_export
+    except Exception as e:pass
+        # frappe.log_error(f"Error getting export restrictions: {str(e)}", "DATEV Export Error")
+    
+    return restrictions
+
+def apply_export_restrictions(employee, restrictions):
+    """Apply export restrictions to employee data."""
+    try:
+        for field_name, no_export in restrictions.items():
+            if no_export and field_name in employee:
+                # Set field to empty if export is restricted
+                original_value = employee[field_name]
+                employee[field_name] = ""
+                # frappe.log_error(f"Field {field_name} restricted for employee {employee.get('name', 'Unknown')}: '{original_value}' -> ''", 
+                #                 "DATEV Export Restriction")
+    except Exception as e:pass
+        # frappe.log_error(f"Error applying export restrictions: {str(e)}", "DATEV Export Error")
+
+def handle_special_field_logic(employee):
+    """Handle special logic for az_wtl_indiv field based on stored value comparison."""
+    try:
+        current_value = employee.get('custom_summe_wochenarbeitszeit')
+        stored_value = employee.get('custom_stored_value_of_summe_wochenarbeitszeit')
+        
+        # Convert to strings for comparison, handling None values
+        current_str = str(current_value) if current_value is not None else ""
+        stored_str = str(stored_value) if stored_value is not None else ""
+        
+        # NEW LOGIC: Check if stored value is empty/None
+        if not stored_value or stored_str.strip() == "" or stored_str.lower() == "none":
+            # Stored value is empty → ALLOW export
+            employee['_restrict_az_wtl_indiv'] = False
+            # frappe.log_error(f"az_wtl_indiv ALLOWED for employee {employee.get('name', 'Unknown')} - stored value is empty", 
+            #                 "DATEV Export Special Logic")
+        elif current_str == stored_str:
+            # Values are equal → DON'T export
+            employee['_restrict_az_wtl_indiv'] = True
+            # frappe.log_error(f"az_wtl_indiv RESTRICTED for employee {employee.get('name', 'Unknown')} - values are equal (current: {current_str}, stored: {stored_str})", 
+            #                 "DATEV Export Special Logic")
         else:
-            employee_dict = dict(employee_doc)
+            # Values are different → ALLOW export
+            employee['_restrict_az_wtl_indiv'] = False
+            # frappe.log_error(f"az_wtl_indiv ALLOWED for employee {employee.get('name', 'Unknown')} - values changed (current: {current_str}, stored: {stored_str})", 
+            #                 "DATEV Export Special Logic")
+            
+    except Exception as e:pass
+        # frappe.log_error(f"Error in handle_special_field_logic for employee {employee.get('name', 'Unknown')}: {str(e)}", 
+                        # "DATEV Export Error")
 
-        # Ensure 'name' property is set
-        if 'name' not in employee_dict:
-            employee_dict['name'] = employee_id
+def update_employee_stored_values(employees):
+    """Update stored values after successful export."""
+    try:
+        for employee in employees:
+            employee_name = employee.get('name')
+            if not employee_name:
+                continue
+                
+            current_value = employee.get('custom_summe_wochenarbeitszeit')
+            
+            # Update the stored value to match current value
+            frappe.db.set_value('Employee', employee_name, 
+                              'custom_stored_value_of_summe_wochenarbeitszeit', 
+                              current_value, update_modified=False)
+            
+        frappe.db.commit()
+        # frappe.log_error(f"Updated stored values for {len(employees)} employees", "DATEV Export Success")
+        
+    except Exception as e:pass
+        # frappe.log_error(f"Error updating stored values: {str(e)}", "DATEV Export Error")
 
-        # Get fields from Personalerfassungsbogen if available
-        if frappe.db.exists('DocType', 'Personalerfassungsbogen'):
-            try:
-                # Get table columns to check which fields are available
-                db_fields = frappe.db.get_table_columns('Personalerfassungsbogen')
+# EXISTING FUNCTIONS - UNCHANGED
+def prepare_employee_dict(employee_id):
+    """Prepare a dictionary with employee data from DocType - FIXED: Use same logic as bulk export."""
+    try:
+        # FIXED: Use the SAME logic as get_employees_for_export() to ensure consistency
+        
+        # Get basic employee data with ALL required fields (same as bulk export)
+        employee_data = frappe.get_all(
+            'Employee',
+            filters={'name': employee_id},
+            fields=[
+                # Standard fields always needed
+                'name', 'company', 'employee_name', 'designation',
+                
+                # All employee fields needed for DATEV export following Excel mapping
+                'custom_land', 'custom_anschriftenzusatz', 'custom_befristung_arbeitserlaubnis',
+                'custom_arbeitsverhältnis', 'custom_befristung_aufenthaltserlaubnis', 'relieving_date',
+                'date_of_joining', 'personal_email', 'custom_ersteintritt_ins_unternehmen_',
+                'last_name', 'date_of_birth', 'gender', 'custom_hausnummer',
+                'custom_höchste_berufsausbildung', 'custom_höchster_schulabschluss',
+                'custom_steueridentnummer', 'custom_summe_wochenarbeitszeit', 
+                'custom_ort', 'employee_number', 'custom_plz', 
+                'custom_befristung_gdb_bescheid', 'custom_schwerbehinderung',
+                'custom_straße', 'cell_number', 'first_name', 'custom_summe_gehalt',
+                'employment_type',
+                
+                # NEW: Add the stored value field for comparison
+                'custom_stored_value_of_summe_wochenarbeitszeit',
+                
+                # Wage type fields - only include if they exist
+                'custom_lohnart_gg', 'custom_lohnart_p1', 'custom_lohnart_p2', 
+                'custom_lohnart_p3', 'custom_lohnart_p4', 'custom_lohnart_z1', 
+                'custom_lohnart_z2',
+                
+                # CRITICAL: Add the wage amount fields from Employee DocType
+                'custom_gehalt_des_grundvertrags',
+                'custom_gehalt_projekt_1', 'custom_gehalt_projekt_2', 
+                'custom_gehalt_projekt_3', 'custom_gehalt_projekt_4',
+                'custom_zulage_zulage_1', 'custom_zulage_zulage_2',
+                'custom_ist_zusätzliche_vergütung_zum_grundgehalt',
+                'custom_ist_zusätzliche_vergütung_zum_grundgehalt_1',
+                'custom_ist_zusätzliche_vergütung_zum_grundgehalt_2',
+                'custom_ist_zusätzliche_vergütung_zum_grundgehalt_3'
+            ]
+        )
 
-                # Build the fields list from existing columns
-                fields = ['name', 'employee']
-                for field in db_fields:
-                    if field not in fields:
-                        fields.append(field)
+        if not employee_data:
+            raise Exception(f"Employee {employee_id} not found")
+            
+        employee_dict = employee_data[0]
 
-                # Get Personalerfassungsbogen data
-                personalerfassungsbogen = frappe.get_all(
-                    'Personalerfassungsbogen',
-                    filters={'employee': employee_id},
-                    fields=fields
-                )
+        # FIXED: Use the SAME Personalerfassungsbogen logic as bulk export
+        from sut_app_datev_export.sut_app_datev_export.utils.employee_data import get_personalerfassungsbogen_data
+        
+        personalerfassungsbogen_data = get_personalerfassungsbogen_data(employee_id)
+        
+        # Add Personalerfassungsbogen data to employee (same as bulk export)
+        if personalerfassungsbogen_data:
+            for field, value in personalerfassungsbogen_data.items():
+                if field != 'kinder_tabelle':
+                    employee_dict[field] = value
+            
+            # Add children data if available
+            if 'kinder_tabelle' in personalerfassungsbogen_data and personalerfassungsbogen_data['kinder_tabelle']:
+                employee_dict['children'] = personalerfassungsbogen_data['kinder_tabelle']
 
-                # Add Personalerfassungsbogen data if available
-                if personalerfassungsbogen:
-                    peb_data = personalerfassungsbogen[0]
-                    peb_name = peb_data.pop('name', None)
-                    peb_data.pop('employee', None)  # Remove redundant field
-
-                    for field, value in peb_data.items():
-                        employee_dict[field] = value
-
-                    # Get children data if Kinder Tabelle exists
-                    if frappe.db.exists('DocType', 'Kinder Tabelle'):
-                        children = frappe.get_all(
-                            'Kinder Tabelle',
-                            filters={'parent': peb_name},
-                            fields=[
-                                'kind_nummer',
-                                'vorname_personaldaten_kinderdaten_allgemeine_angaben',
-                                'familienname_personaldaten_kinderdaten_allgemeine_angaben',
-                                'geburtsdatum_personaldaten_kinderdaten_allgemeine_angaben'
-                            ],
-                            order_by='kind_nummer asc'
-                        )
-
-                        if children:
-                            employee_dict['children'] = children
-            except Exception as e:
-                frappe.log_error(f"Error getting Personalerfassungsbogen data: {str(e)}", "DATEV Export Error")
+        # # DEBUG: Log what we got for comparison
+        # frappe.log_error(f"Single employee data for {employee_id}:", "DATEV Export Debug")
+        # frappe.log_error(f"custom_gehalt_des_grundvertrags: {employee_dict.get('custom_gehalt_des_grundvertrags')}", "DATEV Export Debug")
+        # frappe.log_error(f"custom_gehalt_projekt_1: {employee_dict.get('custom_gehalt_projekt_1')}", "DATEV Export Debug")
+        # frappe.log_error(f"custom_gehalt_projekt_2: {employee_dict.get('custom_gehalt_projekt_2')}", "DATEV Export Debug")
+        # frappe.log_error(f"custom_lohnart_gg: {employee_dict.get('custom_lohnart_gg')}", "DATEV Export Debug")
 
         return employee_dict
 
     except Exception as e:
-        frappe.log_error(f"Error preparing employee dict: {str(e)}", "DATEV Export Error")
+        # frappe.log_error(f"Error preparing employee dict: {str(e)}", "DATEV Export Error")
         # Create a minimal dict with required fields
         return {
             'name': employee_id,
-            'company': frappe.db.get_value('Employee', employee_id, 'company')
+            'company': frappe.db.get_value('Employee', employee_id, 'company'),
+            'custom_stored_value_of_summe_wochenarbeitszeit': frappe.db.get_value('Employee', employee_id, 'custom_stored_value_of_summe_wochenarbeitszeit')
         }
 
 def validate_company_mapping(settings, employees_by_company):
@@ -235,7 +357,6 @@ def reset_export_flags(employees):
     """Reset export flags for all exported employees."""
     for employee in employees:
         frappe.db.set_value('Employee', employee.name, 'custom_for_next_export', 0, update_modified=False)
-        frappe.db.set_value('Employee', employee.name, 'custom_bereits_exportiert', 1, update_modified=False)
-
+        # frappe.db.set_value('Employee', employee.name, 'custom_bereits_exportiert', 1, update_modified=False)
 
     frappe.db.commit()

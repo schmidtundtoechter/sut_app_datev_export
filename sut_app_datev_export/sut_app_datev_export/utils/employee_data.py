@@ -10,7 +10,7 @@ def get_employees_for_export():
     # Get all employees marked for export with their fields
     employees = frappe.get_all(
         'Employee',
-        filters={'custom_for_next_export': 1 , 'custom_bereits_exportiert' : 0},
+        filters={'custom_for_next_export': 1 },
         fields=[
             # Standard fields always needed
             'name', 'company', 'employee_name', 'designation',
@@ -27,10 +27,23 @@ def get_employees_for_export():
             'custom_straße', 'cell_number', 'first_name', 'custom_summe_gehalt',
             'employment_type',
             
+            # Add the stored value field for comparison
+            'custom_stored_value_of_summe_wochenarbeitszeit',
+            
             # Wage type fields - only include if they exist
             'custom_lohnart_gg', 'custom_lohnart_p1', 'custom_lohnart_p2', 
             'custom_lohnart_p3', 'custom_lohnart_p4', 'custom_lohnart_z1', 
-            'custom_lohnart_z2'
+            'custom_lohnart_z2',
+            
+            # CRITICAL: Add the wage amount fields from Employee DocType
+            'custom_gehalt_des_grundvertrags',
+            'custom_gehalt_projekt_1', 'custom_gehalt_projekt_2', 
+            'custom_gehalt_projekt_3', 'custom_gehalt_projekt_4',
+            'custom_zulage_zulage_1', 'custom_zulage_zulage_2',
+            'custom_ist_zusätzliche_vergütung_zum_grundgehalt',
+            'custom_ist_zusätzliche_vergütung_zum_grundgehalt_1',
+            'custom_ist_zusätzliche_vergütung_zum_grundgehalt_2',
+            'custom_ist_zusätzliche_vergütung_zum_grundgehalt_3'
         ]
     )
     
@@ -124,8 +137,8 @@ def get_personalerfassungsbogen_data(employee_name):
             fields=all_fields
         )
     except Exception as e:
-        frappe.log_error(f"Error fetching Personalerfassungsbogen for {employee_name}: {str(e)}", 
-                        "DATEV Export Error")
+        # frappe.log_error(f"Error fetching Personalerfassungsbogen for {employee_name}: {str(e)}", 
+        #                 "DATEV Export Error")
         return {}
     
     # Return empty dict if no record found
@@ -153,9 +166,9 @@ def get_personalerfassungsbogen_data(employee_name):
             
             if children:
                 data['kinder_tabelle'] = children
-        except Exception as e:
-            frappe.log_error(f"Error fetching children for {employee_name}: {str(e)}", 
-                            "DATEV Export Error")
+        except Exception as e:pass
+            # frappe.log_error(f"Error fetching children for {employee_name}: {str(e)}", 
+            #                 "DATEV Export Error")
     
     return data
 
@@ -196,11 +209,11 @@ def map_employee_to_lodas(employee):
         'duevo_vorsatzwort': employee.get('vorsatzwort_mitarbeitername', ""),      # Prefix word
         'nazu_gebname': employee.get('namenszusatz_geburtsname', ""),              # Birth name addition
         'vorsatzwort_gebname': employee.get('vorsatzwort_geburtsname', ""),        # Birth name prefix
-        'versicherungsnummer': employee.get('versicherungsnummer', ""), 
+        'sozialversicherung_nr': employee.get('versicherungsnummer', ""), 
         'datum_studienbesch': format_date(employee.get('studienbescheinigung')),   # Study certificate date
-        'datum_des_todes': format_date(employee.get('datum_des_todes')),   # Study certificate date
-        'beginn_der_ausbildung': format_date(employee.get('beginn_der_ausbildung')),  
-        'voraussichtliches_ende_der_ausbildung_gem_vertrag': format_date(employee.get('voraussichtliches_ende_der_ausbildung_gem_vertrag')),   
+        'datum_tod': format_date(employee.get('datum_des_todes')),   # Study certificate date
+        'ausbildungsbeginn': format_date(employee.get('beginn_der_ausbildung')),  
+        'vorr_ausbildungsende': format_date(employee.get('voraussichtliches_ende_der_ausbildung_gem_vertrag')),   
 
         'loesch_nach_austr_unterdr': map_value_to_died("automatische_loeschung_nach_austritt_unterdruecken", 
                                                       employee.get('automatische_loeschung_nach_austritt_unterdruecken')),  # Suppress automatic deletion
@@ -253,13 +266,12 @@ def map_employee_to_lodas(employee):
         'sba_ort_dienstelle': employee.get('ort_der_dienststelle', ""),           # Authority location
         'sba_sb_ausweis_ab': format_date(employee.get('sb_ausweis_gueltig_ab_tt_mm_jjjj')),  # Disability ID valid from
         
-        # Working time information - following Excel mapping
-        'az_wtl_indiv': employee.get('custom_summe_wochenarbeitszeit', ""),       # Weekly working hours
-        'urlaubsanspr_pro_jahr': employee.get('grundurlaubsanspruch', ""),        # Basic vacation entitlement
-        'urlaubsanspr_pro_jahr_mpd': employee.get('grundurlaubsanspruch', ""),    # MPD vacation entitlement
+        # Working time information - NEW: Special logic for az_wtl_indiv
+        'az_wtl_indiv': get_az_wtl_indiv_value(employee),                         # Weekly working hours with special logic
+        'urlaubsanspr_pro_jahr': employee.get('grundurlaubsanspruch', ""),        
         
         # Salary information - keep current as shown in images
-        'std_lohn_1': employee.get('stundenlohn_1', ""),                            # Hourly wage 1 (keep current field name)
+        'std_lohn_2': employee.get('stundenlohn_1', ""),                            # Hourly wage 1 (keep current field name)
         'lfd_brutto_vereinbart': employee.get('custom_summe_gehalt', ""),         # Current gross agreed
         
         # Travel subsidy - following Excel mapping
@@ -269,8 +281,7 @@ def map_employee_to_lodas(employee):
         'entlohnungsform': map_value_to_died("entlohnungsform", employee.get('entlohnungsform')),  # Remuneration form
         
         # Additional fields for special records
-        'sfn_basislohn': "",  # Removed field - keep empty
-        'sfn_std_lohn': employee.get('stundenlohn', ""),  # Standard hourly wage
+        'std_lohn_1': employee.get('stundenlohn', ""),  # Standard hourly wage
         
         # Default empty values for child information - keep current as shown in images
         'kind_nr': "",
@@ -308,10 +319,23 @@ def map_employee_to_lodas(employee):
         try:
             department_doc = frappe.get_doc("Abteilung fuer DATEV Lodas Export", employee['abteilung_datev_lodas'])
             fields_to_map['kst_abteilungs_nr'] = department_doc.abteilungscode
-        except Exception as e:
-            frappe.log_error(f"Could not fetch Abteilung fields: {str(e)}", "DATEV Export Error")
+        except Exception as e:pass
+            # frappe.log_error(f"Could not fetch Abteilung fields: {str(e)}", "DATEV Export Error")
 
     return fields_to_map
+
+# NEW FUNCTION: Special logic for az_wtl_indiv field
+def get_az_wtl_indiv_value(employee):
+    """Get az_wtl_indiv value with special logic for stored value comparison."""
+    try:
+        # Check if this field should be restricted based on stored value comparison
+        if employee.get('_restrict_az_wtl_indiv', False):
+            return ""  # Return empty if restriction is applied
+        else:
+            return employee.get('custom_summe_wochenarbeitszeit', "")  # Return actual value
+    except Exception as e:
+        # frappe.log_error(f"Error in get_az_wtl_indiv_value: {str(e)}", "DATEV Export Error")
+        return ""
 
 def map_child_to_lodas(employee, child):
     """Create a mapping specifically for a child record - keep current logic as shown in images."""
@@ -367,8 +391,8 @@ def validate_employee_data(employees_by_company):
     
     if validation_errors:
         error_message = "\n".join(validation_errors)
-        frappe.log_error(f"Employee data validation errors:\n{error_message}", 
-                         "DATEV Export Validation Error")
+        # frappe.log_error(f"Employee data validation errors:\n{error_message}", 
+        #                  "DATEV Export Validation Error")
         
         # Show first 5 errors to the user, with "..." if there are more
         user_message = "\n".join(validation_errors[:5])
@@ -376,4 +400,3 @@ def validate_employee_data(employees_by_company):
             user_message += "\n..."
         
         frappe.throw(_("Some employees have incomplete data:\n{0}\n\nSee error log for details.").format(user_message))
-        

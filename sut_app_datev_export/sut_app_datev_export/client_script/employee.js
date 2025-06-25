@@ -7,17 +7,7 @@ frappe.ui.form.on('Employee', {
                 function() {
                     // On Yes
 
-                    frappe.db.get_value('Employee', frm.doc.name , 'custom_bereits_exportiert')
-                        .then(r => {
-                        // console.log(r.message.custom_bereits_exportiert) 
-                        if (r.message.custom_bereits_exportiert) {
-                            frappe.msgprint({
-                                    title: __('Export Error'),
-                                    indicator: 'red',
-                                    message: __(`Employee " ${frm.doc.name} ${frm.doc.employee_name} " is already exported to datev`)
-                                });
-                        }else {
-                        frappe.call({
+                    frappe.call({
                         method: 'sut_app_datev_export.sut_app_datev_export.doctype.datev_export_sut_settings.datev_export_sut_settings.export_single_employee',
                         args: {
                             employee: frm.doc.name
@@ -37,8 +27,6 @@ frappe.ui.form.on('Employee', {
                             }
                         }
                     }); // end call 
-                        }
-                        })
                    
                 }
             );
