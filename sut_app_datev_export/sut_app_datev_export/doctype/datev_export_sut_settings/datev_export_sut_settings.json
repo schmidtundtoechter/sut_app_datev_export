@@ -38,7 +38,7 @@
    "options": "DATEV Export History"
   },
   {
-   "description": "In der obenstehenden Tabelle k\u00f6nnen DAYTEV-Felder eingegeben werden, die nur einmal exportiert werden sollen.\nBsp.: st_klasse\u2019psd darf nur einmal exportiert werden, weil die automatisch korrigierten Angaben in DATEV nicht mehr dauernd \u00fcberschrieben werden sollen, dann geben Sie oben bitte  st_klasse\u2019 ein und lassen die Funktion aktiviert,\n\nSonderfall: az_wtl_indiv#psd (W\u00f6chentliche Arbeitszeit):\nNativ wird der Wert nur exportiert, wenn eine \u00c4nderung vorliegt, um m\u00f6gliche unn\u00f6tige Folgeeingaben zu verhindern.\nSoll das Feld aber nur einmal exportiert werden, geben Sie bitte oben az_wtl_indiv ein und aktivieren die Funktion.",
+   "description": "In der obenstehenden Tabelle k\u00f6nnen DAYTEV-Felder eingegeben werden, die nur einmal exportiert werden sollen.\nBsp.: st_klasse#psd darf nur einmal exportiert werden, weil die automatisch korrigierten Angaben in DATEV nicht mehr dauernd \u00fcberschrieben werden sollen, dann geben Sie oben bitte  st_klasse ein und lassen die Funktion aktiviert,\n\nSonderfall: az_wtl_indiv#psd (W\u00f6chentliche Arbeitszeit):\nNativ wird der Wert nur exportiert, wenn eine \u00c4nderung vorliegt, um m\u00f6gliche unn\u00f6tige Folgeeingaben zu verhindern.\nSoll das Feld aber nur einmal exportiert werden, geben Sie bitte oben az_wtl_indiv ein und aktivieren die Funktion.",
    "fieldname": "mehrfach_export_unterdruecken",
    "fieldtype": "Table",
    "label": "Mehrfach Export unterdruecken",
@@ -49,7 +49,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-25 14:37:29.582397",
+ "modified": "2025-06-26 12:24:20.712610",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "DATEV Export SUT Settings",
