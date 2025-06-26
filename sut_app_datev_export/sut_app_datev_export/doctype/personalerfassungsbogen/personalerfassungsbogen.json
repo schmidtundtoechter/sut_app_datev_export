@@ -1,13 +1,16 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{employee}-{employee_name}",
+ "autoname": "format:{last_name}-{first_name}-{employee_number}-PEB",
  "creation": "2025-04-08 09:48:50.551371",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "pers\u00f6nliche_angaben_section",
   "employee",
+  "employee_number",
+  "first_name",
+  "last_name",
   "akademischer_grad",
   "vorsatzwort_mitarbeitername",
   "employee_name",
@@ -419,12 +422,33 @@
   {
    "fieldname": "column_break_yvqb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.first_name",
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "First Name"
+  },
+  {
+   "fetch_from": "employee.last_name",
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Last Name"
+  },
+  {
+   "fetch_from": "employee.employee_number",
+   "fieldname": "employee_number",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "\u00dcAG Personalnummer"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-24 11:24:43.983511",
+ "modified": "2025-06-26 12:23:32.458510",
  "modified_by": "Administrator",
  "module": "SUT App DATEV Export",
  "name": "Personalerfassungsbogen",
