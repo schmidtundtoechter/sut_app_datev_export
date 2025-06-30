@@ -56,5 +56,25 @@ frappe.ui.form.on('Employee', {
             }, __('Aktionen'));
 
 
+    } , 
+        onload: function(frm) {
+        // Add a red warning across the screen
+        frm.dashboard.clear_headline(); // Clear existing headline
+
+        frm.dashboard.set_headline(`
+            <div style="
+                background-color: #ffcccc;
+                color: red;
+                font-weight: bold;
+                font-size: 16px;
+                text-align: center;
+                padding: 12px;
+                border: 2px solid red;
+                margin-bottom: 15px;
+            ">
+                ⚠️ Achtung! Alle rückwirkenden Änderungen der Gehaltsbestandteile werden beim DATEV Import nur für den aktuell laufenden Monat berücksichtigt!
+                Rückwirkungen müssen manuell an die Lohnabrechnung gemeldet werden!
+            </div>
+        `);
     }
 });
