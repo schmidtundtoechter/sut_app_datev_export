@@ -70,9 +70,11 @@ def generate_lodas_file_header(consultant_number, client_number):
     header += "Stringbegrenzer=\"\"\n"
     header += "Kommentarzeichen=*\n"
     
-    # FIXED: Use now_datetime() and format with correct timezone
+    # FIXED: Use first day of current month instead of current date
     current_time = now_datetime()
-    formatted_date = format_datetime(current_time, "dd.MM.yyyy")
+    # Get first day of current month
+    first_day_of_month = current_time.replace(day=1)
+    formatted_date = format_datetime(first_day_of_month, "dd.MM.yyyy")
     header += f"StammdatenGueltigAb={formatted_date}\n"
     header += "BetrieblichePNrVerwenden=Nein\n\n"
     
@@ -101,7 +103,7 @@ def generate_record_description():
     
     # Record 3: u_lod_psd_beschaeftigung (Employment - following Excel mapping)
     description += "3;u_lod_psd_beschaeftigung;pnr#psd;arbeitsverhaeltnis#psd;eintrittdatum#psd;"
-    description += "austrittdatum#psd;kz_arbbes_nae_abrech_autom#psd;eel_nach_austritt_kz#psd;\n"
+    description += "austrittdatum#psd;eel_nach_austritt_kz#psd;\n"
     
     # Record 4: u_lod_psd_steuer (Tax - following Excel mapping)
     description += "4;u_lod_psd_steuer;pnr#psd;identifikationsnummer#psd;st_klasse#psd;"
@@ -359,7 +361,7 @@ def generate_main_employee_records(employee, settings):
             format_field(mapped_data["arbeitsverhaeltnis"], False, False),  # Employment type (no quotes)
             format_field(mapped_data["eintrittdatum"], False, False),  # Entry date (no quotes)
             format_field(mapped_data["austrittdatum"], False, False),  # Exit date (no quotes)
-            format_field(mapped_data["kz_arbbes_nae_abrech_autom"], False, False),  # Work certificate (no quotes)
+            # format_field(mapped_data["kz_arbbes_nae_abrech_autom"], False, False),  # Work certificate (no quotes)
             format_field(mapped_data["eel_nach_austritt_kz"], False, False),  # EEL after exit (no quotes)
         ]
         data += f'3;{";".join(fields)};\n'
